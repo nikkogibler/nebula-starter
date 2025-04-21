@@ -6,6 +6,24 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 );
 
+// 🎨 Define tag colors
+const platformColors = {
+  TikTok: 'bg-purple-600',
+  Instagram: 'bg-pink-600',
+  YouTube: 'bg-red-600',
+  Reddit: 'bg-orange-500',
+  Pinterest: 'bg-rose-500',
+  Facebook: 'bg-blue-700',
+  X: 'bg-cyan-500'
+};
+
+// 👇 Main component
+export default function Home() {
+  // your state, form logic, rendering, etc.
+}
+
+
+
 export default function Home() {
   const [prompt, setPrompt] = useState('');
   const [message, setMessage] = useState('');
@@ -98,9 +116,10 @@ export default function Home() {
     className="bg-gray-800 rounded-lg px-4 py-3 text-white text-sm shadow-sm"
   >
     {p.platform && (
-      <span className="inline-block bg-blue-600 text-white text-xs font-semibold px-2 py-1 rounded-full mr-2">
-        {p.platform}
-      </span>
+      <span className={`inline-block ${platformColors[p.platform] || 'bg-gray-500'} text-white text-xs font-semibold px-2 py-1 rounded-full mr-2`}>
+  {p.platform}
+</span>
+
     )}
     {p.text}
     <span className="block text-xs text-gray-500 mt-1">
