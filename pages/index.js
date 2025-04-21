@@ -25,26 +25,38 @@ export default function Home() {
   }, [timeFilter]);
 
   const fetchPrompts = async () => {
-    const query = supabase.from('prompts').select('*');
+  let query = supabase.from('prompts').select('*');
 
-    // Time filter logic
-    if (timeFilter !== 'all') {
-      const now = new Date();
-      let fromDate;
+  const now = new Date();
+  let fromDate = null;
+  let toDate = null;
 
-      if (timeFilter === 'lastYear') {
-        fromDate = new Date(now.getFullYear() - 1, 0, 1);
-        const toDate = new Date(now.getFullYear(), 0, 1);
-        query.gte('created_at', fromDate.toISOString()).lt('created_at', toDate.toISOString());
-      } else if (timeFilter === '365') {
-        fromDate = new Date(now.getFullYear(), 0, 1);
-        query.gte('created_at', fromDate.toISOString());
-      } else {
-        fromDate = new Date();
-        fromDate.setDate(now.getDate() - parseInt(timeFilter));
-        query.gte('created_at', fromDate.toISOString());
-      }
-    }
+  if (timeFilter === 'lastYear') {
+    fromDate = new Date(now.getFullYear() - 1, 0, 1);
+    toDate = new Date(now.getFullYear(), 0, 1);
+  } else if (timeFilter === '365') {
+    fromDate = new Date(now.getFullYear(), 0, 1);
+    toDate = now;
+  } else if (timeFilter !== 'all') {
+    fromDate = new Date();
+    fromDate.setDate(now.getDate() - parseInt(timeFilter));
+    toDate = now;
+  }
+
+  if (fromDate) {
+    query = query
+      .gte('created_at', fromDate.toISOString())
+      .lte('created_at', toDate.toISOString());
+  }
+
+  const { data, error } = await query.order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching prompts:', error.message);
+  } else {
+    setPrompts(data);
+  }
+};
 
     const { data, error } = await query.order('created_at', { ascending: false });
 
