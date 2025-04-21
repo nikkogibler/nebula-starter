@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
+// Supabase init
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 );
 
-// 🎨 Define tag colors
+// Platform tag color mapping
 const platformColors = {
   TikTok: 'bg-purple-600',
   Instagram: 'bg-pink-600',
@@ -16,14 +17,6 @@ const platformColors = {
   Facebook: 'bg-blue-700',
   X: 'bg-cyan-500'
 };
-
-
-// 👇 Main component
-export default function Home() {
-  // your state, form logic, rendering, etc.
-}
-
-
 
 export default function Home() {
   const [prompt, setPrompt] = useState('');
@@ -40,8 +33,6 @@ export default function Home() {
       .select('*')
       .order('created_at', { ascending: false });
 
-    console.log("Fetched prompts:", data);
-
     if (error) {
       console.error('Error fetching prompts:', error.message);
     } else {
@@ -50,43 +41,37 @@ export default function Home() {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  if (!prompt) return;
+    e.preventDefault();
+    if (!prompt) return;
 
-  // 🧠 Detect platform from prompt
-  const lowercase = prompt.toLowerCase();
-  let platform = null;
+    // Detect platform
+    const lowercase = prompt.toLowerCase();
+    let platform = null;
 
-  if (lowercase.includes('tiktok')) platform = 'TikTok';
-  else if (lowercase.includes('instagram') || lowercase.includes('ig')) platform = 'Instagram';
-  else if (lowercase.includes('youtube') || lowercase.includes('yt')) platform = 'YouTube';
-  else if (lowercase.includes('reddit')) platform = 'Reddit';
-  else if (lowercase.includes('pinterest')) platform = 'Pinterest';
-  else if (lowercase.includes('facebook') || lowercase.includes('fb')) platform = 'Facebook';
-  else if (
-    lowercase.includes('twitter') ||
-    lowercase.includes('x.com') ||
-    lowercase.includes('x ') ||
-    lowercase.includes('on x')
-  ) platform = 'X';
+    if (lowercase.includes('tiktok')) platform = 'TikTok';
+    else if (lowercase.includes('instagram') || lowercase.includes('ig')) platform = 'Instagram';
+    else if (lowercase.includes('youtube') || lowercase.includes('yt')) platform = 'YouTube';
+    else if (lowercase.includes('reddit')) platform = 'Reddit';
+    else if (lowercase.includes('pinterest')) platform = 'Pinterest';
+    else if (lowercase.includes('facebook') || lowercase.includes('fb')) platform = 'Facebook';
+    else if (
+      lowercase.includes('twitter') ||
+      lowercase.includes('x.com') ||
+      lowercase.includes('x ') ||
+      lowercase.includes('on x')
+    ) platform = 'X';
 
-    console.log("Detected platform:", platform);
+    const { error } = await supabase.from('prompts').insert([{ text: prompt, platform }]);
 
-  // 💾 Save to Supabase
-  const { error } = await supabase
-  .from('prompts')
-  .insert([{ text: prompt, platform }]);
-
-
-  if (error) {
-    console.error('Supabase insert error:', error);
-    setMessage('❌ Something went wrong.');
-  } else {
-    setMessage('✅ Prompt saved!');
-    setPrompt('');
-    fetchPrompts(); // refresh the list
-  }
-};
+    if (error) {
+      console.error('Supabase insert error:', error);
+      setMessage('❌ Something went wrong.');
+    } else {
+      setMessage('✅ Prompt saved!');
+      setPrompt('');
+      fetchPrompts(); // Refresh after insert
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-950 text-white px-6 py-12">
@@ -111,32 +96,30 @@ export default function Home() {
         <div className="mt-10 text-left">
           <h2 className="text-2xl font-semibold mb-4">Your Prompts</h2>
           <ul className="space-y-2">
-            {prompts.map((p) => (
-console.log("Platform value:", p.platform);
+            {prompts.map((p) => {
+              console.log("Platform value:", p.platform); // Debug
 
-              
-              <li
-    key={p.id}
-    className="bg-gray-800 rounded-lg px-4 py-3 text-white text-sm shadow-sm"
-  >
-    {p.platform ? (
-  <span
-    className={`inline-block text-white text-xs font-semibold px-2 py-1 rounded-full mr-2 ${
-      platformColors[p.platform] ?? 'bg-gray-500'
-    }`}
-  >
-    {p.platform}
-  </span>
-) : null}
-
-
-    {p.text}
-    <span className="block text-xs text-gray-500 mt-1">
-      {new Date(p.created_at).toLocaleString()}
-    </span>
-  </li>
-))}
-
+              return (
+                <li
+                  key={p.id}
+                  className="bg-gray-800 rounded-lg px-4 py-3 text-white text-sm shadow-sm"
+                >
+                  {p.platform ? (
+                    <span
+                      className={`inline-block text-white text-xs font-semibold px-2 py-1 rounded-full mr-2 ${
+                        platformColors[p.platform] ?? 'bg-gray-500'
+                      }`}
+                    >
+                      {p.platform}
+                    </span>
+                  ) : null}
+                  {p.text}
+                  <span className="block text-xs text-gray-500 mt-1">
+                    {new Date(p.created_at).toLocaleString()}
+                  </span>
+                </li>
+              );
+            })}
           </ul>
         </div>
       </div>
