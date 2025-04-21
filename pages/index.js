@@ -10,20 +10,22 @@ export default function Home() {
   const [prompt, setPrompt] = useState('');
   const [message, setMessage] = useState('');
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!prompt) return;
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  console.log("Form submitted"); // 👈 Add this line
+  if (!prompt) return;
 
-    const { error } = await supabase.from('prompts').insert([{ text: prompt }]);
+  const { error } = await supabase.from('prompts').insert([{ text: prompt }]);
 
-    if (error) {
-      console.error('Error saving prompt:', error.message);
-      setMessage('❌ Something went wrong.');
-    } else {
-      setMessage('✅ Prompt saved!');
-      setPrompt('');
-    }
-  };
+  if (error) {
+    console.error('Error saving prompt:', error.message);
+    setMessage('❌ Something went wrong.');
+  } else {
+    setMessage('✅ Prompt saved!');
+    setPrompt('');
+  }
+};
+
 
   return (
     <div className="min-h-screen bg-gray-950 text-white px-6 py-12">
