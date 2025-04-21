@@ -93,18 +93,22 @@ export default function Home() {
           <h2 className="text-2xl font-semibold mb-4">Your Prompts</h2>
           <ul className="space-y-2">
             {prompts.map((p) => (
-              <li
-                key={p.id}
-                className="bg-gray-800 rounded-lg px-4 py-3 text-white text-sm shadow-sm"
-              >
-                <span className="font-medium">{p.platform && `[${p.platform}]`}</span>{' '}
-{p.text}
+  <li
+    key={p.id}
+    className="bg-gray-800 rounded-lg px-4 py-3 text-white text-sm shadow-sm"
+  >
+    {p.platform && (
+      <span className="inline-block bg-blue-600 text-white text-xs font-semibold px-2 py-1 rounded-full mr-2">
+        {p.platform}
+      </span>
+    )}
+    {p.text}
+    <span className="block text-xs text-gray-500 mt-1">
+      {new Date(p.created_at).toLocaleString()}
+    </span>
+  </li>
+))}
 
-                <span className="block text-xs text-gray-500 mt-1">
-                  {new Date(p.created_at).toLocaleString()}
-                </span>
-              </li>
-            ))}
           </ul>
         </div>
       </div>
