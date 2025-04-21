@@ -54,7 +54,10 @@ export default function Home() {
     console.log("Detected platform:", platform);
 
   // 💾 Save to Supabase
-  const { error } = await supabase.from('prompts').insert([{ text: prompt, platform }]);
+  const { error } = await supabase
+  .from('prompts')
+  .insert([{ text: prompt, platform }]);
+
 
   if (error) {
     console.error('Supabase insert error:', error);
