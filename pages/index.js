@@ -21,6 +21,8 @@ export default function Home() {
       .select('*')
       .order('created_at', { ascending: false });
 
+    console.log("Fetched prompts:", data);
+
     if (error) {
       console.error('Error fetching prompts:', error.message);
     } else {
