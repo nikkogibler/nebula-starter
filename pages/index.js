@@ -116,11 +116,15 @@ export default function Home() {
     className="bg-gray-800 rounded-lg px-4 py-3 text-white text-sm shadow-sm"
   >
     {p.platform && (
-      <span className={`inline-block ${platformColors[p.platform] || 'bg-gray-500'} text-white text-xs font-semibold px-2 py-1 rounded-full mr-2`}>
-  {p.platform}
-</span>
+  <span
+    className={`inline-block ${
+      platformColors[p.platform] || 'bg-gray-500'
+    } text-white text-xs font-semibold px-2 py-1 rounded-full mr-2`}
+  >
+    {p.platform}
+  </span>
+)}
 
-    )}
     {p.text}
     <span className="block text-xs text-gray-500 mt-1">
       {new Date(p.created_at).toLocaleString()}
