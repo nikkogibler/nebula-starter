@@ -104,15 +104,25 @@ export default function Home() {
                   key={p.id}
                   className="bg-gray-800 rounded-lg px-4 py-3 text-white text-sm shadow-sm"
                 >
-                  {p.platform ? (
-                    <span
-                      className={`inline-block text-white text-xs font-semibold px-2 py-1 rounded-full mr-2 ${
-                        platformColors[p.platform] ?? 'bg-gray-500'
-                      }`}
-                    >
-                      {p.platform}
-                    </span>
-                  ) : null}
+                 {p.platform ? (
+  <span
+    className="inline-block text-white text-xs font-semibold px-2 py-1 rounded-full mr-2"
+    style={{
+      backgroundColor:
+        p.platform === 'TikTok' ? '#8b5cf6' :
+        p.platform === 'Instagram' ? '#ec4899' :
+        p.platform === 'YouTube' ? '#ef4444' :
+        p.platform === 'Reddit' ? '#f97316' :
+        p.platform === 'Pinterest' ? '#f43f5e' :
+        p.platform === 'Facebook' ? '#1d4ed8' :
+        p.platform === 'X' ? '#06b6d4' :
+        '#6b7280' // fallback gray
+    }}
+  >
+    {p.platform}
+  </span>
+) : null}
+
                   {p.text}
                   <span className="block text-xs text-gray-500 mt-1">
                     {new Date(p.created_at).toLocaleString()}
