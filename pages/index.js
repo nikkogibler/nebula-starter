@@ -19,50 +19,50 @@ export default function Home() {
   const [message, setMessage] = useState('');
   const [prompts, setPrompts] = useState([]);
   const [timeFilter, setTimeFilter] = useState('all');
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     fetchPrompts();
   }, [timeFilter]);
 
   const fetchPrompts = async () => {
-  const now = new Date();
-  let fromDate = null;
-  let toDate = null;
+    const now = new Date();
+    let fromDate = null;
+    let toDate = null;
 
-  if (timeFilter === 'lastYear') {
-    fromDate = new Date(now.getFullYear() - 1, 0, 1);
-    toDate = new Date(now.getFullYear(), 0, 1);
-  } else if (timeFilter === '365') {
-    fromDate = new Date(now.getFullYear(), 0, 1);
-    toDate = now;
-  } else if (timeFilter !== 'all') {
-    fromDate = new Date();
-    fromDate.setDate(now.getDate() - parseInt(timeFilter));
-    toDate = now;
-  }
+    if (timeFilter === 'lastYear') {
+      fromDate = new Date(now.getFullYear() - 1, 0, 1);
+      toDate = new Date(now.getFullYear(), 0, 1);
+    } else if (timeFilter === '365') {
+      fromDate = new Date(now.getFullYear(), 0, 1);
+      toDate = now;
+    } else if (timeFilter !== 'all') {
+      fromDate = new Date();
+      fromDate.setDate(now.getDate() - parseInt(timeFilter));
+      toDate = now;
+    }
 
-  let query = supabase.from('prompts').select('*');
+    let query = supabase.from('prompts').select('*');
 
-  if (fromDate && toDate) {
-    // 🧠 Only filter if content_date exists
-    query = query
-      .gte('content_date', fromDate.toISOString())
-      .lte('content_date', toDate.toISOString());
-  }
+    if (fromDate && toDate) {
+      query = query
+        .gte('content_date', fromDate.toISOString())
+        .lte('content_date', toDate.toISOString());
+    }
 
-  const { data, error } = await query.order('created_at', { ascending: false });
+    const { data, error } = await query.order('created_at', { ascending: false });
 
-  if (error) {
-    console.error('Error fetching prompts:', error.message);
-  } else {
-    setPrompts(data);
-  }
-};
-
+    if (error) {
+      console.error('Error fetching prompts:', error.message);
+    } else {
+      setPrompts(data);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("🔁 handleSubmit triggered");
+    console.log('🔁 handleSubmit triggered');
+
     if (!prompt) return;
 
     const lowercase = prompt.toLowerCase();
@@ -99,8 +99,8 @@ export default function Home() {
 
       for (let i = 0; i < months.length; i++) {
         const month = months[i];
-        const regex = new RegExp(`${month}\\s+(\\d{4})`, 'i'); // case-insensitive
-        const match = prompt.match(regex); // use original prompt for casing
+        const regex = new RegExp(`${month}\\s+(\\d{4})`, 'i');
+        const match = prompt.match(regex);
 
         if (match) {
           const matchedYear = parseInt(match[1]);
@@ -110,7 +110,7 @@ export default function Home() {
       }
     }
 
-    console.log("Detected content_date:", content_date);
+    console.log('🧠 content_date =', content_date);
 
     const { error } = await supabase
       .from('prompts')
@@ -137,59 +137,79 @@ export default function Home() {
         <form onSubmit={handleSubmit}>
           <input
             type="text"
+            name="prompt"
+            id="prompt"
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             placeholder="Try: Show my saved TikToks from March 2024"
             className="w-full bg-gray-800 text-white rounded-lg p-4 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
+          <button type="submit" style={{ display: 'none' }}></button>
         </form>
 
         {message && <p className="text-green-400 mt-4">{message}</p>}
 
         <div className="mt-10 text-left">
-          <div className="mb-6 flex justify-between items-center">
-            <h2 className="text-2xl font-semibold">Your Prompts</h2>
-            <select
-              value={timeFilter}
-              onChange={(e) => setTimeFilter(e.target.value)}
-              className="bg-gray-800 text-white border border-gray-600 rounded-lg px-3 py-1 text-sm"
-            >
-              {Object.entries(timeOptions).map(([key, label]) => (
-                <option key={key} value={key}>{label}</option>
-              ))}
-            </select>
+          <div className="mb-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+            <div className="flex items-center gap-2">
+              <label htmlFor="timeFilter" className="text-sm font-medium">
+                Timeframe:
+              </label>
+              <select
+                id="timeFilter"
+                value={timeFilter}
+                onChange={(e) => setTimeFilter(e.target.value)}
+                className="bg-gray-800 text-white border border-gray-600 rounded-lg px-3 py-1 text-sm"
+              >
+                {Object.entries(timeOptions).map(([key, label]) => (
+                  <option key={key} value={key}>{label}</option>
+                ))}
+              </select>
+            </div>
+
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Search prompts..."
+              className="bg-gray-800 text-white border border-gray-600 rounded-lg px-3 py-1 text-sm w-full sm:w-1/2"
+            />
           </div>
 
           <ul className="space-y-2">
-            {prompts.map((p) => (
-              <li
-                key={p.id}
-                className="bg-gray-800 rounded-lg px-4 py-3 text-white text-sm shadow-sm"
-              >
-                {p.platform && (
-                  <span
-                    className="inline-block text-white text-xs font-semibold px-2 py-1 rounded-full mr-2"
-                    style={{
-                      backgroundColor:
-                        p.platform === 'TikTok' ? '#8b5cf6' :
-                        p.platform === 'Instagram' ? '#ec4899' :
-                        p.platform === 'YouTube' ? '#ef4444' :
-                        p.platform === 'Reddit' ? '#f97316' :
-                        p.platform === 'Pinterest' ? '#f43f5e' :
-                        p.platform === 'Facebook' ? '#1d4ed8' :
-                        p.platform === 'X' ? '#06b6d4' :
-                        '#6b7280'
-                    }}
-                  >
-                    {p.platform}
+            {prompts
+              .filter((p) =>
+                searchTerm === '' ? true : p.text.toLowerCase().includes(searchTerm.toLowerCase())
+              )
+              .map((p) => (
+                <li
+                  key={p.id}
+                  className="bg-gray-800 rounded-lg px-4 py-3 text-white text-sm shadow-sm"
+                >
+                  {p.platform && (
+                    <span
+                      className="inline-block text-white text-xs font-semibold px-2 py-1 rounded-full mr-2"
+                      style={{
+                        backgroundColor:
+                          p.platform === 'TikTok' ? '#8b5cf6' :
+                          p.platform === 'Instagram' ? '#ec4899' :
+                          p.platform === 'YouTube' ? '#ef4444' :
+                          p.platform === 'Reddit' ? '#f97316' :
+                          p.platform === 'Pinterest' ? '#f43f5e' :
+                          p.platform === 'Facebook' ? '#1d4ed8' :
+                          p.platform === 'X' ? '#06b6d4' :
+                          '#6b7280'
+                      }}
+                    >
+                      {p.platform}
+                    </span>
+                  )}
+                  {p.text}
+                  <span className="block text-xs text-gray-500 mt-1">
+                    {new Date(p.created_at).toLocaleString()}
                   </span>
-                )}
-                {p.text}
-                <span className="block text-xs text-gray-500 mt-1">
-                  {new Date(p.created_at).toLocaleString()}
-                </span>
-              </li>
-            ))}
+                </li>
+              ))}
           </ul>
         </div>
       </div>
