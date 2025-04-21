@@ -1,32 +1,48 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 );
-console.log("SUPABASE_URL:", process.env.NEXT_PUBLIC_SUPABASE_URL);
 
 export default function Home() {
   const [prompt, setPrompt] = useState('');
   const [message, setMessage] = useState('');
+  const [prompts, setPrompts] = useState([]);
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  console.log("Form submitted"); // 👈 Add this line
-  if (!prompt) return;
+  useEffect(() => {
+    fetchPrompts();
+  }, []);
 
-  const { error } = await supabase.from('prompts').insert([{ text: prompt }]);
+  const fetchPrompts = async () => {
+    const { data, error } = await supabase
+      .from('prompts')
+      .select('*')
+      .order('created_at', { ascending: false });
 
-  if (error) {
-    console.error('Supabase insert error:', error);
-    setMessage('❌ Something went wrong.');
-  } else {
-    setMessage('✅ Prompt saved!');
-    setPrompt('');
-  }
-};
+    if (error) {
+      console.error('Error fetching prompts:', error.message);
+    } else {
+      setPrompts(data);
+    }
+  };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!prompt) return;
+
+    const { error } = await supabase.from('prompts').insert([{ text: prompt }]);
+
+    if (error) {
+      console.error('Supabase insert error:', error);
+      setMessage('❌ Something went wrong.');
+    } else {
+      setMessage('✅ Prompt saved!');
+      setPrompt('');
+      fetchPrompts(); // refresh the list
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-950 text-white px-6 py-12">
@@ -47,6 +63,23 @@ const handleSubmit = async (e) => {
         </form>
 
         {message && <p className="text-green-400 mt-4">{message}</p>}
+
+        <div className="mt-10 text-left">
+          <h2 className="text-2xl font-semibold mb-4">Your Prompts</h2>
+          <ul className="space-y-2">
+            {prompts.map((p) => (
+              <li
+                key={p.id}
+                className="bg-gray-800 rounded-lg px-4 py-3 text-white text-sm shadow-sm"
+              >
+                {p.text}
+                <span className="block text-xs text-gray-500 mt-1">
+                  {new Date(p.created_at).toLocaleString()}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </div>
   );
