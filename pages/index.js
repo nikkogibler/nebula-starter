@@ -19,7 +19,7 @@ const handleSubmit = async (e) => {
   const { error } = await supabase.from('prompts').insert([{ text: prompt }]);
 
   if (error) {
-    console.error('Error saving prompt:', error.message);
+    console.error('Supabase insert error:', error);
     setMessage('❌ Something went wrong.');
   } else {
     setMessage('✅ Prompt saved!');
