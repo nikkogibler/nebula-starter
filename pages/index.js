@@ -70,36 +70,31 @@ export default function Home() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!prompt) return;
+  e.preventDefault();
+  if (!prompt) return;
 
-    const lowercase = prompt.toLowerCase();
-    let platform = null;
+  const lowercase = prompt.toLowerCase();
+  let platform = null;
+  let content_date = null;
 
-    if (lowercase.includes('tiktok')) platform = 'TikTok';
-    else if (lowercase.includes('instagram') || lowercase.includes('ig')) platform = 'Instagram';
-    else if (lowercase.includes('youtube') || lowercase.includes('yt')) platform = 'YouTube';
-    else if (lowercase.includes('reddit')) platform = 'Reddit';
-    else if (lowercase.includes('pinterest')) platform = 'Pinterest';
-    else if (lowercase.includes('facebook') || lowercase.includes('fb')) platform = 'Facebook';
-    else if (
-      lowercase.includes('twitter') ||
-      lowercase.includes('x.com') ||
-      lowercase.includes('x ') ||
-      lowercase.includes('on x')
-    ) platform = 'X';
+  // Detect platform
+  if (lowercase.includes('tiktok')) platform = 'TikTok';
+  else if (lowercase.includes('instagram') || lowercase.includes('ig')) platform = 'Instagram';
+  else if (lowercase.includes('youtube') || lowercase.includes('yt')) platform = 'YouTube';
+  else if (lowercase.includes('reddit')) platform = 'Reddit';
+  else if (lowercase.includes('pinterest')) platform = 'Pinterest';
+  else if (lowercase.includes('facebook') || lowercase.includes('fb')) platform = 'Facebook';
+  else if (
+    lowercase.includes('twitter') ||
+    lowercase.includes('x.com') ||
+    lowercase.includes('x ') ||
+    lowercase.includes('on x')
+  ) platform = 'X';
 
-    const { error } = await supabase.from('prompts').insert([{ text: prompt, platform }]);
+  // Detect content date
+  const now = new Date();
+  const year = now.getFullYear();
 
-    if (error) {
-      console.error('Supabase insert error:', error);
-      setMessage('❌ Something went wrong.');
-    } else {
-      setMessage('✅ Prompt saved!');
-      setPrompt('');
-      fetchPrompts();
-    }
-  };
 
   return (
     <div className="min-h-screen bg-gray-950 text-white px-6 py-12">
