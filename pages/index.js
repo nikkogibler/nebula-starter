@@ -25,38 +25,40 @@ export default function Home() {
   }, [timeFilter]);
 
   const fetchPrompts = async () => {
-    const now = new Date();
-    let fromDate = null;
-    let toDate = null;
+  const now = new Date();
+  let fromDate = null;
+  let toDate = null;
 
-    if (timeFilter === 'lastYear') {
-      fromDate = new Date(now.getFullYear() - 1, 0, 1);
-      toDate = new Date(now.getFullYear(), 0, 1);
-    } else if (timeFilter === '365') {
-      fromDate = new Date(now.getFullYear(), 0, 1);
-      toDate = now;
-    } else if (timeFilter !== 'all') {
-      fromDate = new Date();
-      fromDate.setDate(now.getDate() - parseInt(timeFilter));
-      toDate = now;
-    }
+  if (timeFilter === 'lastYear') {
+    fromDate = new Date(now.getFullYear() - 1, 0, 1);
+    toDate = new Date(now.getFullYear(), 0, 1);
+  } else if (timeFilter === '365') {
+    fromDate = new Date(now.getFullYear(), 0, 1);
+    toDate = now;
+  } else if (timeFilter !== 'all') {
+    fromDate = new Date();
+    fromDate.setDate(now.getDate() - parseInt(timeFilter));
+    toDate = now;
+  }
 
-    let query = supabase.from('prompts').select('*');
+  let query = supabase.from('prompts').select('*');
 
-    if (fromDate && toDate) {
-      query = query
-        .gte('created_at', fromDate.toISOString())
-        .lte('created_at', toDate.toISOString());
-    }
+  if (fromDate && toDate) {
+    // 🧠 Only filter if content_date exists
+    query = query
+      .gte('content_date', fromDate.toISOString())
+      .lte('content_date', toDate.toISOString());
+  }
 
-    const { data, error } = await query.order('created_at', { ascending: false });
+  const { data, error } = await query.order('created_at', { ascending: false });
 
-    if (error) {
-      console.error('Error fetching prompts:', error.message);
-    } else {
-      setPrompts(data);
-    }
-  };
+  if (error) {
+    console.error('Error fetching prompts:', error.message);
+  } else {
+    setPrompts(data);
+  }
+};
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
