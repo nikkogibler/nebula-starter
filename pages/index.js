@@ -51,6 +51,8 @@ export default function Home() {
     lowercase.includes('on x')
   ) platform = 'X';
 
+    console.log("Detected platform:", platform);
+
   // 💾 Save to Supabase
   const { error } = await supabase.from('prompts').insert([{ text: prompt, platform }]);
 
