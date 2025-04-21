@@ -60,6 +60,7 @@ export default function Home() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("🔁 handleSubmit triggered");
     if (!prompt) return;
 
     const lowercase = prompt.toLowerCase();
