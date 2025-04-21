@@ -17,6 +17,7 @@ const platformColors = {
   X: 'bg-cyan-500'
 };
 
+
 // 👇 Main component
 export default function Home() {
   // your state, form logic, rendering, etc.
@@ -111,19 +112,23 @@ export default function Home() {
           <h2 className="text-2xl font-semibold mb-4">Your Prompts</h2>
           <ul className="space-y-2">
             {prompts.map((p) => (
-  <li
+console.log("Platform value:", p.platform);
+
+              
+              <li
     key={p.id}
     className="bg-gray-800 rounded-lg px-4 py-3 text-white text-sm shadow-sm"
   >
-    {p.platform && (
+    {p.platform ? (
   <span
-    className={`inline-block ${
-      platformColors[p.platform] || 'bg-gray-500'
-    } text-white text-xs font-semibold px-2 py-1 rounded-full mr-2`}
+    className={`inline-block text-white text-xs font-semibold px-2 py-1 rounded-full mr-2 ${
+      platformColors[p.platform] ?? 'bg-gray-500'
+    }`}
   >
     {p.platform}
   </span>
-)}
+) : null}
+
 
     {p.text}
     <span className="block text-xs text-gray-500 mt-1">
