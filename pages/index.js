@@ -1,37 +1,52 @@
 import { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
-// Supabase init
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 );
 
-// Platform tag color mapping
-const platformColors = {
-  TikTok: 'bg-purple-600',
-  Instagram: 'bg-pink-600',
-  YouTube: 'bg-red-600',
-  Reddit: 'bg-orange-500',
-  Pinterest: 'bg-rose-500',
-  Facebook: 'bg-blue-700',
-  X: 'bg-cyan-500'
+const timeOptions = {
+  'all': 'All Time',
+  '7': 'Past 7 Days',
+  '30': 'Past 30 Days',
+  '365': 'This Year',
+  'lastYear': 'Last Year'
 };
 
 export default function Home() {
   const [prompt, setPrompt] = useState('');
   const [message, setMessage] = useState('');
   const [prompts, setPrompts] = useState([]);
+  const [timeFilter, setTimeFilter] = useState('all');
 
   useEffect(() => {
     fetchPrompts();
-  }, []);
+  }, [timeFilter]);
 
   const fetchPrompts = async () => {
-    const { data, error } = await supabase
-      .from('prompts')
-      .select('*')
-      .order('created_at', { ascending: false });
+    const query = supabase.from('prompts').select('*');
+
+    // Time filter logic
+    if (timeFilter !== 'all') {
+      const now = new Date();
+      let fromDate;
+
+      if (timeFilter === 'lastYear') {
+        fromDate = new Date(now.getFullYear() - 1, 0, 1);
+        const toDate = new Date(now.getFullYear(), 0, 1);
+        query.gte('created_at', fromDate.toISOString()).lt('created_at', toDate.toISOString());
+      } else if (timeFilter === '365') {
+        fromDate = new Date(now.getFullYear(), 0, 1);
+        query.gte('created_at', fromDate.toISOString());
+      } else {
+        fromDate = new Date();
+        fromDate.setDate(now.getDate() - parseInt(timeFilter));
+        query.gte('created_at', fromDate.toISOString());
+      }
+    }
+
+    const { data, error } = await query.order('created_at', { ascending: false });
 
     if (error) {
       console.error('Error fetching prompts:', error.message);
@@ -44,7 +59,6 @@ export default function Home() {
     e.preventDefault();
     if (!prompt) return;
 
-    // Detect platform
     const lowercase = prompt.toLowerCase();
     let platform = null;
 
@@ -69,7 +83,7 @@ export default function Home() {
     } else {
       setMessage('✅ Prompt saved!');
       setPrompt('');
-      fetchPrompts(); // Refresh after insert
+      fetchPrompts();
     }
   };
 
@@ -94,42 +108,49 @@ export default function Home() {
         {message && <p className="text-green-400 mt-4">{message}</p>}
 
         <div className="mt-10 text-left">
-          <h2 className="text-2xl font-semibold mb-4">Your Prompts</h2>
+          <div className="mb-6 flex justify-between items-center">
+            <h2 className="text-2xl font-semibold">Your Prompts</h2>
+            <select
+              value={timeFilter}
+              onChange={(e) => setTimeFilter(e.target.value)}
+              className="bg-gray-800 text-white border border-gray-600 rounded-lg px-3 py-1 text-sm"
+            >
+              {Object.entries(timeOptions).map(([key, label]) => (
+                <option key={key} value={key}>{label}</option>
+              ))}
+            </select>
+          </div>
+
           <ul className="space-y-2">
-            {prompts.map((p) => {
-              console.log("Platform value:", p.platform); // Debug
-
-              return (
-                <li
-                  key={p.id}
-                  className="bg-gray-800 rounded-lg px-4 py-3 text-white text-sm shadow-sm"
-                >
-                 {p.platform ? (
-  <span
-    className="inline-block text-white text-xs font-semibold px-2 py-1 rounded-full mr-2"
-    style={{
-      backgroundColor:
-        p.platform === 'TikTok' ? '#8b5cf6' :
-        p.platform === 'Instagram' ? '#ec4899' :
-        p.platform === 'YouTube' ? '#ef4444' :
-        p.platform === 'Reddit' ? '#f97316' :
-        p.platform === 'Pinterest' ? '#f43f5e' :
-        p.platform === 'Facebook' ? '#1d4ed8' :
-        p.platform === 'X' ? '#06b6d4' :
-        '#6b7280' // fallback gray
-    }}
-  >
-    {p.platform}
-  </span>
-) : null}
-
-                  {p.text}
-                  <span className="block text-xs text-gray-500 mt-1">
-                    {new Date(p.created_at).toLocaleString()}
+            {prompts.map((p) => (
+              <li
+                key={p.id}
+                className="bg-gray-800 rounded-lg px-4 py-3 text-white text-sm shadow-sm"
+              >
+                {p.platform && (
+                  <span
+                    className="inline-block text-white text-xs font-semibold px-2 py-1 rounded-full mr-2"
+                    style={{
+                      backgroundColor:
+                        p.platform === 'TikTok' ? '#8b5cf6' :
+                        p.platform === 'Instagram' ? '#ec4899' :
+                        p.platform === 'YouTube' ? '#ef4444' :
+                        p.platform === 'Reddit' ? '#f97316' :
+                        p.platform === 'Pinterest' ? '#f43f5e' :
+                        p.platform === 'Facebook' ? '#1d4ed8' :
+                        p.platform === 'X' ? '#06b6d4' :
+                        '#6b7280'
+                    }}
+                  >
+                    {p.platform}
                   </span>
-                </li>
-              );
-            })}
+                )}
+                {p.text}
+                <span className="block text-xs text-gray-500 mt-1">
+                  {new Date(p.created_at).toLocaleString()}
+                </span>
+              </li>
+            ))}
           </ul>
         </div>
       </div>
