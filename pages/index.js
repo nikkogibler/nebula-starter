@@ -97,7 +97,9 @@ export default function Home() {
                 key={p.id}
                 className="bg-gray-800 rounded-lg px-4 py-3 text-white text-sm shadow-sm"
               >
-                {p.text}
+                <span className="font-medium">{p.platform && `[${p.platform}]`}</span>{' '}
+{p.text}
+
                 <span className="block text-xs text-gray-500 mt-1">
                   {new Date(p.created_at).toLocaleString()}
                 </span>
