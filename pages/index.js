@@ -7,11 +7,11 @@ const supabase = createClient(
 );
 
 const timeOptions = {
-  'all': 'All Time',
+  all: 'All Time',
   '7': 'Past 7 Days',
   '30': 'Past 30 Days',
   '365': 'This Year',
-  'lastYear': 'Last Year'
+  lastYear: 'Last Year'
 };
 
 export default function Home() {
@@ -25,40 +25,29 @@ export default function Home() {
   }, [timeFilter]);
 
   const fetchPrompts = async () => {
-  const now = new Date();
-  let fromDate = null;
-  let toDate = null;
+    const now = new Date();
+    let fromDate = null;
+    let toDate = null;
 
-  if (timeFilter === 'lastYear') {
-    fromDate = new Date(now.getFullYear() - 1, 0, 1);
-    toDate = new Date(now.getFullYear(), 0, 1);
-  } else if (timeFilter === '365') {
-    fromDate = new Date(now.getFullYear(), 0, 1);
-    toDate = now;
-  } else if (timeFilter !== 'all') {
-    fromDate = new Date();
-    fromDate.setDate(now.getDate() - parseInt(timeFilter));
-    toDate = now;
-  }
+    if (timeFilter === 'lastYear') {
+      fromDate = new Date(now.getFullYear() - 1, 0, 1);
+      toDate = new Date(now.getFullYear(), 0, 1);
+    } else if (timeFilter === '365') {
+      fromDate = new Date(now.getFullYear(), 0, 1);
+      toDate = now;
+    } else if (timeFilter !== 'all') {
+      fromDate = new Date();
+      fromDate.setDate(now.getDate() - parseInt(timeFilter));
+      toDate = now;
+    }
 
-  // Start building the query
-  let query = supabase.from('prompts').select('*');
+    let query = supabase.from('prompts').select('*');
 
-  // Apply date filters if needed
-  if (fromDate && toDate) {
-    query = query
-      .gte('created_at', fromDate.toISOString())
-      .lte('created_at', toDate.toISOString());
-  }
-
-  const { data, error } = await query.order('created_at', { ascending: false });
-
-  if (error) {
-    console.error('Error fetching prompts:', error.message);
-  } else {
-    setPrompts(data);
-  }
-};
+    if (fromDate && toDate) {
+      query = query
+        .gte('created_at', fromDate.toISOString())
+        .lte('created_at', toDate.toISOString());
+    }
 
     const { data, error } = await query.order('created_at', { ascending: false });
 
@@ -70,31 +59,69 @@ export default function Home() {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  if (!prompt) return;
+    e.preventDefault();
+    if (!prompt) return;
 
-  const lowercase = prompt.toLowerCase();
-  let platform = null;
-  let content_date = null;
+    const lowercase = prompt.toLowerCase();
+    let platform = null;
+    let content_date = null;
 
-  // Detect platform
-  if (lowercase.includes('tiktok')) platform = 'TikTok';
-  else if (lowercase.includes('instagram') || lowercase.includes('ig')) platform = 'Instagram';
-  else if (lowercase.includes('youtube') || lowercase.includes('yt')) platform = 'YouTube';
-  else if (lowercase.includes('reddit')) platform = 'Reddit';
-  else if (lowercase.includes('pinterest')) platform = 'Pinterest';
-  else if (lowercase.includes('facebook') || lowercase.includes('fb')) platform = 'Facebook';
-  else if (
-    lowercase.includes('twitter') ||
-    lowercase.includes('x.com') ||
-    lowercase.includes('x ') ||
-    lowercase.includes('on x')
-  ) platform = 'X';
+    // Platform detection
+    if (lowercase.includes('tiktok')) platform = 'TikTok';
+    else if (lowercase.includes('instagram') || lowercase.includes('ig')) platform = 'Instagram';
+    else if (lowercase.includes('youtube') || lowercase.includes('yt')) platform = 'YouTube';
+    else if (lowercase.includes('reddit')) platform = 'Reddit';
+    else if (lowercase.includes('pinterest')) platform = 'Pinterest';
+    else if (lowercase.includes('facebook') || lowercase.includes('fb')) platform = 'Facebook';
+    else if (
+      lowercase.includes('twitter') ||
+      lowercase.includes('x.com') ||
+      lowercase.includes('x ') ||
+      lowercase.includes('on x')
+    ) platform = 'X';
 
-  // Detect content date
-  const now = new Date();
-  const year = now.getFullYear();
+    // Content date detection
+    const now = new Date();
+    const year = now.getFullYear();
 
+    if (lowercase.includes('last year')) {
+      content_date = new Date(year - 1, 0, 1);
+    } else if (lowercase.includes('this year')) {
+      content_date = new Date(year, 0, 1);
+    } else {
+      const months = [
+        'january', 'february', 'march', 'april', 'may', 'june',
+        'july', 'august', 'september', 'october', 'november', 'december'
+      ];
+
+      for (let i = 0; i < months.length; i++) {
+        const month = months[i];
+        const regex = new RegExp(`${month}\\s+(\\d{4})`, 'i'); // case-insensitive
+        const match = prompt.match(regex); // use original prompt for casing
+
+        if (match) {
+          const matchedYear = parseInt(match[1]);
+          content_date = new Date(matchedYear, i, 1);
+          break;
+        }
+      }
+    }
+
+    console.log("Detected content_date:", content_date);
+
+    const { error } = await supabase
+      .from('prompts')
+      .insert([{ text: prompt, platform, content_date }]);
+
+    if (error) {
+      console.error('Supabase insert error:', error);
+      setMessage('❌ Something went wrong.');
+    } else {
+      setMessage('✅ Prompt saved!');
+      setPrompt('');
+      fetchPrompts();
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-950 text-white px-6 py-12">
@@ -109,7 +136,7 @@ export default function Home() {
             type="text"
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
-            placeholder="Try: Show my saved TikToks from 2022 in a moodboard"
+            placeholder="Try: Show my saved TikToks from March 2024"
             className="w-full bg-gray-800 text-white rounded-lg p-4 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </form>
