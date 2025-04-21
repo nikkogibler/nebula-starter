@@ -25,8 +25,6 @@ export default function Home() {
   }, [timeFilter]);
 
   const fetchPrompts = async () => {
-  let query = supabase.from('prompts').select('*');
-
   const now = new Date();
   let fromDate = null;
   let toDate = null;
@@ -43,7 +41,11 @@ export default function Home() {
     toDate = now;
   }
 
-  if (fromDate) {
+  // Start building the query
+  let query = supabase.from('prompts').select('*');
+
+  // Apply date filters if needed
+  if (fromDate && toDate) {
     query = query
       .gte('created_at', fromDate.toISOString())
       .lte('created_at', toDate.toISOString());
