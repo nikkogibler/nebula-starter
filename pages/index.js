@@ -185,7 +185,7 @@ export default function Home() {
     alt="Nebula Logo"
     className="w-32 sm:w-40 md:w-48 mb-4 mix-blend-screen"
     style={{
-      filter: 'invert(1) drop-shadow(0 0 12px rgba(255,255,255,0.5))',
+      filter: 'drop-shadow(0 0 12px rgba(255,255,255,0.5))',
       imageRendering: 'auto',
       backgroundColor: 'transparent',
       WebkitMaskImage: 'none'
