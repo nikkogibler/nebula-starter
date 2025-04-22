@@ -17,4 +17,12 @@ body {
   background-size: 400% 400%;
   animation: nebulaShift 20s ease infinite;
 }
+canvas#stars {
+  display: block;
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
 
