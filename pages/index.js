@@ -115,12 +115,19 @@ export default function Home() {
   };
 
   return (
-    <div className="absolute inset-0 z-0 bg-nebula opacity-40"></div>
+  <div className="relative min-h-screen bg-black text-white overflow-hidden">
+    {/* 🔮 Nebula background */}
+    <div className="absolute inset-0 bg-nebula opacity-40 z-0" />
+
+    {/* ✨ Star canvas */}
     <canvas
-  id="stars"
-  className="absolute inset-0 z-0"
-  style={{ backgroundColor: 'rgba(255, 0, 0, 0.3)' }} // RED TINT
-/>
+      id="stars"
+      className="absolute inset-0 z-0"
+      style={{ backgroundColor: 'rgba(255, 0, 0, 0.3)' }} // temp test red
+    />
+
+
+
 
 
     <div className="min-h-screen bg-black text-white px-6 py-12">
