@@ -120,15 +120,13 @@ export default function Home() {
     <div className="absolute inset-0 bg-nebula opacity-40 z-0" />
 
     {/* ✨ Star canvas */}
-    <canvas
-      id="stars"
-      className="absolute inset-0 z-0"
-      style={{ backgroundColor: 'rgba(255, 0, 0, 0.3)' }} // temp test red
-    />
-
-
-
-
+   {typeof window !== 'undefined' && (
+  <canvas
+    id="stars"
+    className="absolute inset-0 z-0"
+    style={{ backgroundColor: 'rgba(255, 0, 0, 0.3)' }}
+  />
+)}
 
     <div className="min-h-screen bg-black text-white px-6 py-12">
       <div className="max-w-3xl mx-auto text-center">
