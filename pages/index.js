@@ -178,17 +178,20 @@ export default function Home() {
     <div className="absolute inset-0 bg-nebula opacity-40 z-0 pointer-events-none" />
     <canvas id="stars" className="absolute inset-0 z-0 pointer-events-none" />
 
-    <div className="relative z-10 px-6 py-12 max-w-3xl mx-auto text-center">
-      {/* 🟣 New Logo + Header + Tagline */}
-      <div className="flex flex-col items-center justify-center mb-10">
-        <img
-          src="/logo-nebula.png"
-          alt="Nebula Logo"
-          className="w-32 sm:w-40 md:w-48 mb-4"
-          style={{ filter: 'drop-shadow(0 0 8px rgba(147, 51, 234, 0.7))' }}
-        />
-        
-      </div>
+<div className="relative mb-10 h-32 sm:h-40 md:h-52 flex items-center justify-center">
+  <img
+    src="/logo-nebula.png"
+    alt="Nebula Logo"
+    className="absolute w-64 sm:w-72 md:w-80 mix-blend-screen"
+    style={{
+      filter: 'invert(1) drop-shadow(0 0 16px rgba(255,255,255,0.5))',
+      imageRendering: 'auto',
+      backgroundColor: 'transparent',
+      WebkitMaskImage: 'none'
+    }}
+  />
+</div>
+
 
       <form onSubmit={handleSubmit} className="mb-6">
         <input
