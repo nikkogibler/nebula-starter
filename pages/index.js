@@ -169,7 +169,11 @@ setTimeout(() => {
     <div className="absolute inset-0 z-0 bg-nebula opacity-40" />
 
     {/* ✨ Starfield canvas */}
-    <canvas id="stars" className="absolute inset-0 z-0 pointer-events-none" />
+    <canvas
+  id="stars"
+  className="absolute inset-0 z-0 pointer-events-none"
+  style={{ backgroundColor: 'rgba(0, 0, 0, 0.2)' }}
+/>
 
     {/* 🧠 Main app content (your existing layout) */}
     <div className="relative z-10 px-6 py-12">
