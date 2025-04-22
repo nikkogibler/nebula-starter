@@ -60,10 +60,14 @@ export default function Home() {
   };
 
   useEffect(() => {
+setTimeout(() => {
   const canvas = document.getElementById('stars');
   if (!canvas) return;
 
   const ctx = canvas.getContext('2d');
+  // ...rest of the code inside here
+}, 0);
+
   const stars = [];
 
   const resize = () => {
