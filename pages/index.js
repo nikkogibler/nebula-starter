@@ -14,6 +14,8 @@ export default function Home() {
   const [timeFilter, setTimeFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
 
+    const __forceTailwindTicker = "animate-ticker";
+
   const timeOptions = {
     all: 'All Time',
     '7': 'Past 7 Days',
