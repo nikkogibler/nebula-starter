@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
-import { detectLayoutType } from '../utils/detectLayoutType';
-import LayoutPreview from '../components/LayoutPreview';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -63,6 +61,7 @@ export default function Home() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log('🔁 handleSubmit triggered');
 
     if (!prompt) return;
 
@@ -82,8 +81,6 @@ export default function Home() {
       lowercase.includes('x ') ||
       lowercase.includes('on x')
     ) platform = 'X';
-
-    const layout_type = detectLayoutType(prompt);
 
     const now = new Date();
     const year = now.getFullYear();
@@ -111,9 +108,11 @@ export default function Home() {
       }
     }
 
+    console.log('🧠 content_date =', content_date);
+
     const { error } = await supabase
       .from('prompts')
-      .insert([{ text: prompt, platform, content_date, layout_type }]);
+      .insert([{ text: prompt, platform, content_date }]);
 
     if (error) {
       console.error('Supabase insert error:', error);
@@ -127,40 +126,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-950 text-white px-6 py-12">
-      <h1 className="text-3xl font-bold mb-6">Nebula Prompt App</h1>
-
-      <form onSubmit={handleSubmit} className="mb-6">
-        <input
-          type="text"
-          placeholder="Type a prompt..."
-          value={prompt}
-          onChange={(e) => setPrompt(e.target.value)}
-          className="w-full px-4 py-2 rounded bg-gray-800 text-white border border-gray-600"
-        />
-        <button
-          type="submit"
-          className="mt-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded"
-        >
-          Submit
-        </button>
-      </form>
-
-      {message && <p className="text-green-400 mb-4">{message}</p>}
-
-      {prompts.map((prompt) => (
-        <div key={prompt.id} className="mb-6 border-b border-white/10 pb-4">
-          <p className="text-white text-lg font-medium mb-2">{prompt.text}</p>
-
-          {prompt.layout_type && (
-            <>
-              <p className="text-purple-300 text-sm mb-2">
-                Layout Type: {prompt.layout_type}
-              </p>
-              <LayoutPreview layout_type={prompt.layout_type} />
-            </>
-          )}
-        </div>
-      ))}
+      ...
     </div>
   );
 }
