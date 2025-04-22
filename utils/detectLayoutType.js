@@ -1,4 +1,3 @@
-// utils/detectLayoutType.js
 export const detectLayoutType = (text) => {
   const supportedLayouts = ['carousel', 'grid', 'moodboard', 'timeline', 'storyboard', 'gallery'];
 
@@ -9,5 +8,5 @@ export const detectLayoutType = (text) => {
     }
   }
 
-  return null; // fallback if no layout found
+  return null;
 };
