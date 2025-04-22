@@ -178,7 +178,7 @@ export default function Home() {
     <div className="absolute inset-0 bg-nebula opacity-40 z-0 pointer-events-none" />
     <canvas id="stars" className="absolute inset-0 z-0 pointer-events-none" />
 
-<div className="relative mb-10 h-32 sm:h-40 md:h-52 flex items-center justify-center">
+<div className="relative flex justify-center items-center h-40 sm:h-52 md:h-64 mb-10">
   <img
     src="/logo-nebula.png"
     alt="Nebula Logo"
@@ -191,6 +191,7 @@ export default function Home() {
     }}
   />
 </div>
+
 
 
       <form onSubmit={handleSubmit} className="mb-6">
