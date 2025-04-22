@@ -1,8 +1,5 @@
 import { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
-import { detectLayoutType } from '../utils/detectLayoutType'; // 👈 Import the layout detection function
-import LayoutPreview from '../components/LayoutPreview';
-
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -64,15 +61,14 @@ export default function Home() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('🔁 handleSubmit triggered');
-
     if (!prompt) return;
 
     const lowercase = prompt.toLowerCase();
     let platform = null;
     let content_date = null;
+    let layout_type = null;
 
-    // 🧠 Platform detection
+    // Platform detection
     if (lowercase.includes('tiktok')) platform = 'TikTok';
     else if (lowercase.includes('instagram') || lowercase.includes('ig')) platform = 'Instagram';
     else if (lowercase.includes('youtube') || lowercase.includes('yt')) platform = 'YouTube';
@@ -86,10 +82,14 @@ export default function Home() {
       lowercase.includes('on x')
     ) platform = 'X';
 
-    // 🧠 Layout type detection
-    const layout_type = detectLayoutType(prompt);
+    // Layout detection
+    if (lowercase.includes('carousel')) layout_type = 'carousel';
+    else if (lowercase.includes('grid')) layout_type = 'grid';
+    else if (lowercase.includes('timeline')) layout_type = 'timeline';
+    else if (lowercase.includes('moodboard')) layout_type = 'moodboard';
+    else if (lowercase.includes('stacked')) layout_type = 'stacked';
 
-    // 🧠 Content date detection
+    // Date detection
     const now = new Date();
     const year = now.getFullYear();
 
@@ -116,16 +116,12 @@ export default function Home() {
       }
     }
 
-    console.log('🧠 Detected content_date:', content_date);
-    console.log('🧠 Detected layout_type:', layout_type);
-
-    // Save to Supabase
     const { error } = await supabase
       .from('prompts')
       .insert([{ text: prompt, platform, content_date, layout_type }]);
 
     if (error) {
-      console.error('❌ Supabase insert error:', error);
+      console.error('Supabase insert error:', error);
       setMessage('❌ Something went wrong.');
     } else {
       setMessage('✅ Prompt saved!');
@@ -136,7 +132,117 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-950 text-white px-6 py-12">
-      {/* You can add form, search bar, filters, and prompt list here */}
+      <div className="max-w-3xl mx-auto text-center">
+        <h1 className="text-4xl font-bold mb-4">Nebula 🌌</h1>
+        <p className="text-lg text-gray-300 mb-8">
+          Explore your saved universe. Use the prompt bar below to generate your custom layout.
+        </p>
+
+        <form onSubmit={handleSubmit}>
+          <input
+            type="text"
+            name="prompt"
+            id="prompt"
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            placeholder="Try: Show my saved TikToks from March 2024"
+            className="w-full bg-gray-800 text-white rounded-lg p-4 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <button type="submit" style={{ display: 'none' }}></button>
+        </form>
+
+        {message && <p className="text-green-400 mt-4">{message}</p>}
+
+        <div className="mt-10 text-left">
+          <div className="mb-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+            <div className="flex items-center gap-2">
+              <label htmlFor="timeFilter" className="text-sm font-medium">
+                Timeframe:
+              </label>
+              <select
+                id="timeFilter"
+                value={timeFilter}
+                onChange={(e) => setTimeFilter(e.target.value)}
+                className="bg-gray-800 text-white border border-gray-600 rounded-lg px-3 py-1 text-sm"
+              >
+                {Object.entries(timeOptions).map(([key, label]) => (
+                  <option key={key} value={key}>{label}</option>
+                ))}
+              </select>
+            </div>
+
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Search prompts..."
+              className="bg-gray-800 text-white border border-gray-600 rounded-lg px-3 py-1 text-sm w-full sm:w-1/2"
+            />
+          </div>
+
+          <ul className="space-y-4">
+            {prompts
+              .filter((p) =>
+                searchTerm === '' ? true : p.text.toLowerCase().includes(searchTerm.toLowerCase())
+              )
+              .map((p) => (
+                <li
+                  key={p.id}
+                  className="bg-gray-800 rounded-lg px-4 py-4 text-white text-sm shadow-sm"
+                >
+                  {p.platform && (
+                    <span
+                      className="inline-block text-white text-xs font-semibold px-2 py-1 rounded-full mr-2"
+                      style={{
+                        backgroundColor:
+                          p.platform === 'TikTok' ? '#8b5cf6' :
+                          p.platform === 'Instagram' ? '#ec4899' :
+                          p.platform === 'YouTube' ? '#ef4444' :
+                          p.platform === 'Reddit' ? '#f97316' :
+                          p.platform === 'Pinterest' ? '#f43f5e' :
+                          p.platform === 'Facebook' ? '#1d4ed8' :
+                          p.platform === 'X' ? '#06b6d4' :
+                          '#6b7280'
+                      }}
+                    >
+                      {p.platform}
+                    </span>
+                  )}
+                  {p.text}
+
+                  {p.layout_type && (
+                    <div className="mt-3">
+                      <div className="text-xs text-blue-400 font-semibold mb-1">
+                        Layout preview: {p.layout_type}
+                      </div>
+                      <div
+                        className={`w-full h-32 rounded-lg ${
+                          p.layout_type === 'carousel'
+                            ? 'bg-gradient-to-r from-purple-700 via-pink-600 to-orange-500 animate-pulse'
+                            : p.layout_type === 'grid'
+                            ? 'grid grid-cols-3 gap-2 bg-gray-800 p-2'
+                            : p.layout_type === 'moodboard'
+                            ? 'bg-yellow-300/10 border border-yellow-400/20 p-4 italic'
+                            : p.layout_type === 'timeline'
+                            ? 'bg-gradient-to-b from-blue-600 via-sky-400 to-white animate-pulse'
+                            : 'bg-gray-700'
+                        }`}
+                      >
+                        <span className="block text-xs text-center pt-12 text-gray-300">
+                          {p.layout_type} preview
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
+                  <span className="block text-xs text-gray-500 mt-3">
+                    {new Date(p.created_at).toLocaleString()}
+                  </span>
+                </li>
+              ))}
+          </ul>
+        </div>
+      </div>
     </div>
   );
 }
