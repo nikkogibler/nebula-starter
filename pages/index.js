@@ -117,9 +117,11 @@ export default function Home() {
   return (
     <div className="absolute inset-0 z-0 bg-nebula opacity-40"></div>
     <canvas
-      id="stars"
-      className="absolute inset-0 z-0 pointer-events-none"
-    />
+  id="stars"
+  className="absolute inset-0 z-0"
+  style={{ backgroundColor: 'rgba(255, 0, 0, 0.3)' }} // RED TINT
+/>
+
 
     <div className="min-h-screen bg-black text-white px-6 py-12">
       <div className="max-w-3xl mx-auto text-center">
