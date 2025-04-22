@@ -152,15 +152,41 @@ export default function Home() {
               <li key={p.id} className="bg-gray-800 p-4 rounded">
                 <div className="text-sm mb-1">
                   {p.platform && (
-                    <span className="inline-block bg-blue-700 text-white text-xs font-semibold px-2 py-1 rounded-full mr-2">
-                      {p.platform}
-                    </span>
-                  )}
-                  {p.layout_type && (
-                    <span className="inline-block bg-indigo-500 text-white text-xs font-semibold px-2 py-1 rounded-full mr-2">
-                      {p.layout_type}
-                    </span>
-                  )}
+  <span
+    className="inline-block text-white text-xs font-semibold px-2 py-1 rounded-full mr-2"
+    style={{
+      backgroundColor:
+        p.platform === 'TikTok' ? '#8b5cf6' :
+        p.platform === 'Instagram' ? '#ec4899' :
+        p.platform === 'YouTube' ? '#ef4444' :
+        p.platform === 'Reddit' ? '#f97316' :
+        p.platform === 'Pinterest' ? '#f43f5e' :
+        p.platform === 'Facebook' ? '#1d4ed8' :
+        p.platform === 'X' ? '#06b6d4' :
+        '#6b7280'
+    }}
+  >
+    {p.platform}
+  </span>
+)}
+
+{p.layout_type && (
+  <span
+    className="inline-block text-white text-xs font-semibold px-2 py-1 rounded-full mr-2"
+    style={{
+      backgroundColor:
+        p.layout_type === 'carousel' ? '#f97316' :
+        p.layout_type === 'grid' ? '#0ea5e9' :
+        p.layout_type === 'timeline' ? '#10b981' :
+        p.layout_type === 'moodboard' ? '#eab308' :
+        p.layout_type === 'stacked' ? '#a855f7' :
+        '#6b7280'
+    }}
+  >
+    {p.layout_type}
+  </span>
+)}
+
                   {p.text}
                 </div>
                 <div className="text-xs text-gray-400 mt-1">
