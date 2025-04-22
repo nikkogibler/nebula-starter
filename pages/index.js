@@ -151,7 +151,7 @@ export default function Home() {
             .map((p) => (
               <li key={p.id} className="bg-gray-800 p-4 rounded">
                 <div className="text-sm mb-1">
-                  {p.platform && (
+                 {p.platform && (
   <span
     className="inline-block text-white text-xs font-semibold px-2 py-1 rounded-full mr-2"
     style={{
@@ -169,6 +169,24 @@ export default function Home() {
     {p.platform}
   </span>
 )}
+
+{p.layout_type && (
+  <span
+    className="inline-block text-white text-xs font-semibold px-2 py-1 rounded-full mr-2"
+    style={{
+      backgroundColor:
+        p.layout_type === 'carousel' ? '#f97316' :
+        p.layout_type === 'grid' ? '#0ea5e9' :
+        p.layout_type === 'timeline' ? '#10b981' :
+        p.layout_type === 'moodboard' ? '#eab308' :
+        p.layout_type === 'stacked' ? '#a855f7' :
+        '#6b7280'
+    }}
+  >
+    {p.layout_type}
+  </span>
+)}
+
 
 {p.layout_type && (
   <span
