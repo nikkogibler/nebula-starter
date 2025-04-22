@@ -174,15 +174,15 @@ export default function Home() {
   }, []);
 
   return (
-  <div className="relative min-h-screen bg-black text-white overflow-hidden">
+ <div className="relative z-10 px-6 py-6 max-w-3xl mx-auto text-center">
     <div className="absolute inset-0 bg-nebula opacity-40 z-0 pointer-events-none" />
     <canvas id="stars" className="absolute inset-0 z-0 pointer-events-none" />
 
-<div className="relative flex justify-center items-center h-40 sm:h-52 md:h-64 mb-10">
+<div className="pointer-events-none absolute top-10 left-1/2 transform -translate-x-1/2 z-0">
   <img
     src="/logo-nebula.png"
     alt="Nebula Logo"
-    className="absolute w-64 sm:w-72 md:w-80 mix-blend-screen"
+    className="w-72 sm:w-80 md:w-96 mix-blend-screen"
     style={{
       filter: 'invert(1) drop-shadow(0 0 16px rgba(255,255,255,0.5))',
       imageRendering: 'auto',
@@ -191,6 +191,7 @@ export default function Home() {
     }}
   />
 </div>
+
 
 
 
