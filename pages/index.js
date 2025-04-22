@@ -187,10 +187,7 @@ export default function Home() {
           className="w-32 sm:w-40 md:w-48 mb-4"
           style={{ filter: 'drop-shadow(0 0 8px rgba(147, 51, 234, 0.7))' }}
         />
-        <h1 className="text-5xl font-bold text-white">Nebula</h1>
-        <p className="text-gray-300 text-lg mt-2">
-          Organize life by meaning, not just time.
-        </p>
+        
       </div>
 
       <form onSubmit={handleSubmit} className="mb-6">
