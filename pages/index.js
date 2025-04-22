@@ -115,7 +115,9 @@ export default function Home() {
   };
 
   return (
-  <div className="relative min-h-screen bg-black text-white overflow-hidden">
+ <div className="absolute inset-0 z-[5]" style={{ background: 'red' }}></div>
+
+    <div className="relative min-h-screen bg-black text-white overflow-hidden">
     {/* 🔮 Nebula background */}
     <div className="absolute inset-0 bg-nebula opacity-40 z-0" />
 
