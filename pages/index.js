@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import { detectLayoutType } from '../utils/detectLayoutType'; // 👈 Import the layout detection function
+import LayoutPreview from '../components/LayoutPreview';
+
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
