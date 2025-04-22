@@ -209,7 +209,7 @@ export default function Home() {
     fontFamily: 'monospace',
     textTransform: 'uppercase',
     padding: '0.25rem 1rem',
-    animation: 'scrollTicker 30s linear infinite',
+    animation: 'scrollTicker 50s linear infinite',
     zIndex: 30,
     position: 'relative'
   }}>
