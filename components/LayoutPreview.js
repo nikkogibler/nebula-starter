@@ -48,12 +48,11 @@ export default function LayoutPreview({ layout_type }) {
     ),
   };
 
-  return (
-    <div className="p-4 bg-black/20 rounded-xl border border-white/10 mt-2">
-      <p className="mb-2 text-sm font-semibold uppercase text-white/60">
-        {layout_type} preview
-      </p>
-      {layouts[layout_type] || <p className="text-white/40">Unknown layout</p>}
-    </div>
-  );
+return (
+  <div className="mt-2">
+    {layouts[layout_type] || (
+      <p className="text-white/40">Unknown layout type</p>
+    )}
+  </div>
+);
 }
