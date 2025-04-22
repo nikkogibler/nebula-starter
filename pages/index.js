@@ -114,8 +114,16 @@ export default function Home() {
     }
   };
 
-  return (
-    <div className="min-h-screen bg-black text-white px-6 py-12">
+ return (
+  <div className="relative min-h-screen bg-black overflow-hidden text-white">
+    {/* 🔮 Nebula animated gradient */}
+    <div className="absolute inset-0 z-0 bg-nebula opacity-40" />
+
+    {/* ✨ Starfield canvas */}
+    <canvas id="stars" className="absolute inset-0 z-0 pointer-events-none" />
+
+    {/* 🧠 Main app content (your existing layout) */}
+    <div className="relative z-10 px-6 py-12">
       <div className="max-w-3xl mx-auto text-center">
         <h1 className="text-4xl font-bold mb-4">Nebula 🌌</h1>
         <p className="text-gray-400 mb-8">Your visual content memory</p>
@@ -151,24 +159,36 @@ export default function Home() {
             .map((p) => (
               <li key={p.id} className="bg-gray-800 p-4 rounded">
                 <div className="text-sm mb-1">
-                 {p.platform && (
-  <span
-    className="inline-block text-white text-xs font-semibold px-2 py-1 rounded-full mr-2"
-    style={{
-      backgroundColor:
-        p.platform === 'TikTok' ? '#8b5cf6' :
-        p.platform === 'Instagram' ? '#ec4899' :
-        p.platform === 'YouTube' ? '#ef4444' :
-        p.platform === 'Reddit' ? '#f97316' :
-        p.platform === 'Pinterest' ? '#f43f5e' :
-        p.platform === 'Facebook' ? '#1d4ed8' :
-        p.platform === 'X' ? '#06b6d4' :
-        '#6b7280'
-    }}
-  >
-    {p.platform}
-  </span>
-)}
+                  {p.platform && (
+                    <span
+                      className="inline-block text-white text-xs font-semibold px-2 py-1 rounded-full mr-2"
+                      style={{
+                        backgroundColor:
+                          p.platform === 'TikTok' ? '#8b5cf6' :
+                          p.platform === 'Instagram' ? '#ec4899' :
+                          p.platform === 'YouTube' ? '#ef4444' :
+                          p.platform === 'Reddit' ? '#f97316' :
+                          p.platform === 'Pinterest' ? '#f43f5e' :
+                          p.platform === 'Facebook' ? '#1d4ed8' :
+                          p.platform === 'X' ? '#06b6d4' :
+                          '#6b7280'
+                      }}
+                    >
+                      {p.platform}
+                    </span>
+                  )}
+                  {p.text}
+                </div>
+                <div className="text-xs text-gray-400 mt-1">
+                  {new Date(p.created_at).toLocaleString()}
+                </div>
+              </li>
+            ))}
+        </ul>
+      </div>
+    </div>
+  </div>
+);
 
 {p.layout_type && (
   <span
