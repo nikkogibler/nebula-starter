@@ -119,6 +119,9 @@ export default function Home() {
     {/* 🔮 Nebula background */}
     <div className="absolute inset-0 bg-nebula opacity-40 z-0" />
 
+    <div className="hidden bg-nebula"></div>
+
+
     {/* ✨ Star canvas */}
    {typeof window !== 'undefined' && (
   <canvas
