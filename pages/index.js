@@ -59,55 +59,6 @@ export default function Home() {
     }
   };
 
-  useEffect(() => {
-setTimeout(() => {
-  const canvas = document.getElementById('stars');
-  if (!canvas) return;
-
-  const ctx = canvas.getContext('2d');
-  // ...rest of the code inside here
-}, 0);
-
-  const stars = [];
-
-  const resize = () => {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-  };
-  resize();
-  window.addEventListener('resize', resize);
-
-  for (let i = 0; i < 150; i++) {
-    stars.push({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      r: Math.random() * 1.5,
-      a: Math.random(),
-      s: Math.random() * 0.5 + 0.2
-    });
-  }
-
-  const draw = () => {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    stars.forEach(star => {
-      star.y += star.s;
-      if (star.y > canvas.height) {
-        star.y = 0;
-        star.x = Math.random() * canvas.width;
-      }
-      ctx.beginPath();
-      ctx.arc(star.x, star.y, star.r, 0, 2 * Math.PI);
-      ctx.fillStyle = `rgba(255,255,255,${star.a})`;
-      ctx.fill();
-    });
-    requestAnimationFrame(draw);
-  };
-
-  draw();
-  return () => window.removeEventListener('resize', resize);
-}, []);
-
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     const lowercase = prompt.toLowerCase();
@@ -163,20 +114,14 @@ setTimeout(() => {
     }
   };
 
- return (
-  <div className="relative min-h-screen bg-black overflow-hidden text-white">
-    {/* 🔮 Nebula animated gradient */}
-    <div className="absolute inset-0 z-0 bg-nebula opacity-40" />
-
-    {/* ✨ Starfield canvas */}
+  return (
+    <div className="absolute inset-0 z-0 bg-nebula opacity-40"></div>
     <canvas
-  id="stars"
-  className="absolute inset-0 z-0 pointer-events-none"
-  style={{ backgroundColor: 'rgba(0, 0, 0, 0.2)' }}
-/>
+      id="stars"
+      className="absolute inset-0 z-0 pointer-events-none"
+    />
 
-    {/* 🧠 Main app content (your existing layout) */}
-    <div className="relative z-10 px-6 py-12">
+    <div className="min-h-screen bg-black text-white px-6 py-12">
       <div className="max-w-3xl mx-auto text-center">
         <h1 className="text-4xl font-bold mb-4">Nebula 🌌</h1>
         <p className="text-gray-400 mb-8">Your visual content memory</p>
@@ -212,36 +157,24 @@ setTimeout(() => {
             .map((p) => (
               <li key={p.id} className="bg-gray-800 p-4 rounded">
                 <div className="text-sm mb-1">
-                  {p.platform && (
-                    <span
-                      className="inline-block text-white text-xs font-semibold px-2 py-1 rounded-full mr-2"
-                      style={{
-                        backgroundColor:
-                          p.platform === 'TikTok' ? '#8b5cf6' :
-                          p.platform === 'Instagram' ? '#ec4899' :
-                          p.platform === 'YouTube' ? '#ef4444' :
-                          p.platform === 'Reddit' ? '#f97316' :
-                          p.platform === 'Pinterest' ? '#f43f5e' :
-                          p.platform === 'Facebook' ? '#1d4ed8' :
-                          p.platform === 'X' ? '#06b6d4' :
-                          '#6b7280'
-                      }}
-                    >
-                      {p.platform}
-                    </span>
-                  )}
-                  {p.text}
-                </div>
-                <div className="text-xs text-gray-400 mt-1">
-                  {new Date(p.created_at).toLocaleString()}
-                </div>
-              </li>
-            ))}
-        </ul>
-      </div>
-    </div>
-  </div>
-);
+                 {p.platform && (
+  <span
+    className="inline-block text-white text-xs font-semibold px-2 py-1 rounded-full mr-2"
+    style={{
+      backgroundColor:
+        p.platform === 'TikTok' ? '#8b5cf6' :
+        p.platform === 'Instagram' ? '#ec4899' :
+        p.platform === 'YouTube' ? '#ef4444' :
+        p.platform === 'Reddit' ? '#f97316' :
+        p.platform === 'Pinterest' ? '#f43f5e' :
+        p.platform === 'Facebook' ? '#1d4ed8' :
+        p.platform === 'X' ? '#06b6d4' :
+        '#6b7280'
+    }}
+  >
+    {p.platform}
+  </span>
+)}
 
 {p.layout_type && (
   <span
@@ -290,3 +223,68 @@ setTimeout(() => {
     </div>
   );
 }
+
+
+  useEffect(() => {
+    let animationId;
+    let canvas, ctx;
+    const stars = [];
+
+    function initStars() {
+      if (!canvas) return;
+      stars.length = 0;
+      for (let i = 0; i < 150; i++) {
+        stars.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          r: Math.random() * 1.5,
+          a: Math.random(),
+          s: Math.random() * 0.5 + 0.2
+        });
+      }
+    }
+
+    function resize() {
+      if (!canvas) return;
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      initStars();
+    }
+
+    function draw() {
+      if (!ctx || !canvas) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      stars.forEach(star => {
+        star.y += star.s;
+        if (star.y > canvas.height) {
+          star.y = 0;
+          star.x = Math.random() * canvas.width;
+        }
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.r, 0, 2 * Math.PI);
+        ctx.fillStyle = `rgba(255,255,255,${star.a})`;
+        ctx.fill();
+      });
+      animationId = requestAnimationFrame(draw);
+    }
+
+    setTimeout(() => {
+      canvas = document.getElementById('stars');
+      if (!canvas) return;
+      ctx = canvas.getContext('2d');
+      resize();
+      window.addEventListener('resize', resize);
+      draw();
+    }, 0);
+
+    return (
+    <div className="absolute inset-0 z-0 bg-nebula opacity-40"></div>
+    <canvas
+      id="stars"
+      className="absolute inset-0 z-0 pointer-events-none"
+    />
+) => {
+      window.removeEventListener('resize', resize);
+      if (animationId) cancelAnimationFrame(animationId);
+    };
+  }, []);
