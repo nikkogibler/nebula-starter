@@ -193,12 +193,12 @@ export default function Home() {
   />
 </div>
 
-    <div className="relative z-10 w-full flex justify-center mt-2 mb-6">
-  <div className="overflow-hidden max-w-3xl w-full border border-yellow-500 rounded-sm">
-    <div className="animate-ticker whitespace-nowrap text-yellow-400 text-xs font-mono px-4 py-1 tracking-widest uppercase">
-      NEBULA EST NOMEN COMMUNE STELLARUM NUBILARIUM — WILLIAM HERSCHEL • THESE FIERY CLOUDS — FATHOMLESS, SILENT — ARE THE VERY ECHO OF TIME ITSELF — EDWIN HUBBLE •
-    </div>
+    {/* Scrolling Ticker */}
+<div className="overflow-hidden w-full border-y border-yellow-500 mb-6">
+  <div className="animate-ticker text-yellow-400 text-xs font-mono tracking-widest uppercase px-4 py-1">
+    NEBULA EST NOMEN COMMUNE STELLARUM NUBILARIUM — WILLIAM HERSCHEL • THESE FIERY CLOUDS — FATHOMLESS, SILENT — ARE THE VERY ECHO OF TIME ITSELF — EDWIN HUBBLE • 
   </div>
+</div>
 </div>
 
         <form onSubmit={handleSubmit} className="mb-6">
