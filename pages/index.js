@@ -59,6 +59,51 @@ export default function Home() {
     }
   };
 
+  useEffect(() => {
+  const canvas = document.getElementById('stars');
+  if (!canvas) return;
+
+  const ctx = canvas.getContext('2d');
+  const stars = [];
+
+  const resize = () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  };
+  resize();
+  window.addEventListener('resize', resize);
+
+  for (let i = 0; i < 150; i++) {
+    stars.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 1.5,
+      a: Math.random(),
+      s: Math.random() * 0.5 + 0.2
+    });
+  }
+
+  const draw = () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    stars.forEach(star => {
+      star.y += star.s;
+      if (star.y > canvas.height) {
+        star.y = 0;
+        star.x = Math.random() * canvas.width;
+      }
+      ctx.beginPath();
+      ctx.arc(star.x, star.y, star.r, 0, 2 * Math.PI);
+      ctx.fillStyle = `rgba(255,255,255,${star.a})`;
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  };
+
+  draw();
+  return () => window.removeEventListener('resize', resize);
+}, []);
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const lowercase = prompt.toLowerCase();
