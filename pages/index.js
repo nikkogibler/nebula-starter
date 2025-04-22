@@ -174,104 +174,104 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center mb-10">
-  <img
-    src="/logo-nebula.png"
-    alt="Nebula Logo"
-    className="w-32 sm:w-40 md:w-48 mb-4"
-    style={{ filter: 'drop-shadow(0 0 8px rgba(147, 51, 234, 0.7))' }}
-  />
-  <div className="flex flex-col items-center justify-center mb-10">
-  <img
-    src="/logo-nebula.png"
-    alt="Nebula Logo"
-    className="w-32 sm:w-40 md:w-48 mb-4"
-    style={{ filter: 'drop-shadow(0 0 8px rgba(147, 51, 234, 0.7))' }}
-  />
-  <h1 className="text-5xl font-bold text-white">Nebula</h1>
-  <p className="text-gray-300 text-lg mt-2">
-    Organize life by meaning, not just time.
-  </p>
-</div>
+  <div className="relative min-h-screen bg-black text-white overflow-hidden">
+    <div className="absolute inset-0 bg-nebula opacity-40 z-0 pointer-events-none" />
+    <canvas id="stars" className="absolute inset-0 z-0 pointer-events-none" />
 
-        <form onSubmit={handleSubmit} className="mb-6">
-          <input
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            placeholder="Try: Show my TikToks from March 2024 in a grid"
-            className="w-full p-4 rounded bg-gray-800 text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500"
-          />
-        </form>
-
-        <div className="flex flex-col sm:flex-row justify-between items-center mb-4 gap-2">
-          <select
-            value={timeFilter}
-            onChange={(e) => setTimeFilter(e.target.value)}
-            className="bg-gray-800 text-white border border-gray-600 rounded px-3 py-2 text-sm"
-          >
-            {Object.entries(timeOptions).map(([key, label]) => (
-              <option key={key} value={key}>{label}</option>
-            ))}
-          </select>
-          <input
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search prompts..."
-            className="bg-gray-800 text-white border border-gray-600 rounded px-3 py-2 text-sm w-full sm:w-1/2"
-          />
-        </div>
-
-        {message && <p className="text-green-400 mb-4">{message}</p>}
-
-        <ul className="space-y-4 text-left">
-          {prompts
-            .filter(p => searchTerm === '' || p.text.toLowerCase().includes(searchTerm.toLowerCase()))
-            .map((p) => (
-              <li key={p.id} className="bg-gray-800 p-4 rounded">
-                <div className="text-sm mb-1">
-                  {p.platform && (
-                    <span
-                      className="inline-block text-white text-xs font-semibold px-2 py-1 rounded-full mr-2"
-                      style={{
-                        backgroundColor:
-                          p.platform === 'TikTok' ? '#8b5cf6' :
-                          p.platform === 'Instagram' ? '#ec4899' :
-                          p.platform === 'YouTube' ? '#ef4444' :
-                          p.platform === 'Reddit' ? '#f97316' :
-                          p.platform === 'Pinterest' ? '#f43f5e' :
-                          p.platform === 'Facebook' ? '#1d4ed8' :
-                          p.platform === 'X' ? '#06b6d4' :
-                          '#6b7280'
-                      }}
-                    >
-                      {p.platform}
-                    </span>
-                  )}
-                  {p.layout_type && (
-                    <span
-                      className="inline-block text-white text-xs font-semibold px-2 py-1 rounded-full mr-2"
-                      style={{
-                        backgroundColor:
-                          p.layout_type === 'carousel' ? '#f97316' :
-                          p.layout_type === 'grid' ? '#0ea5e9' :
-                          p.layout_type === 'timeline' ? '#10b981' :
-                          p.layout_type === 'moodboard' ? '#eab308' :
-                          p.layout_type === 'stacked' ? '#a855f7' :
-                          '#6b7280'
-                      }}
-                    >
-                      {p.layout_type}
-                    </span>
-                  )}
-                  {p.text}
-                </div>
-                <div className="text-xs text-gray-400 mt-1">
-                  {new Date(p.created_at).toLocaleString()}
-                </div>
-              </li>
-            ))}
-        </ul>
+    <div className="relative z-10 px-6 py-12 max-w-3xl mx-auto text-center">
+      {/* 🟣 New Logo + Header + Tagline */}
+      <div className="flex flex-col items-center justify-center mb-10">
+        <img
+          src="/logo-nebula.png"
+          alt="Nebula Logo"
+          className="w-32 sm:w-40 md:w-48 mb-4"
+          style={{ filter: 'drop-shadow(0 0 8px rgba(147, 51, 234, 0.7))' }}
+        />
+        <h1 className="text-5xl font-bold text-white">Nebula</h1>
+        <p className="text-gray-300 text-lg mt-2">
+          Organize life by meaning, not just time.
+        </p>
       </div>
+
+      <form onSubmit={handleSubmit} className="mb-6">
+        <input
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          placeholder="Try: Show my TikToks from March 2024 in a grid"
+          className="w-full p-4 rounded bg-gray-800 text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500"
+        />
+      </form>
+
+      <div className="flex flex-col sm:flex-row justify-between items-center mb-4 gap-2">
+        <select
+          value={timeFilter}
+          onChange={(e) => setTimeFilter(e.target.value)}
+          className="bg-gray-800 text-white border border-gray-600 rounded px-3 py-2 text-sm"
+        >
+          {Object.entries(timeOptions).map(([key, label]) => (
+            <option key={key} value={key}>{label}</option>
+          ))}
+        </select>
+        <input
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder="Search prompts..."
+          className="bg-gray-800 text-white border border-gray-600 rounded px-3 py-2 text-sm w-full sm:w-1/2"
+        />
+      </div>
+
+      {message && <p className="text-green-400 mb-4">{message}</p>}
+
+      <ul className="space-y-4 text-left">
+        {prompts
+          .filter(p => searchTerm === '' || p.text.toLowerCase().includes(searchTerm.toLowerCase()))
+          .map((p) => (
+            <li key={p.id} className="bg-gray-800 p-4 rounded">
+              <div className="text-sm mb-1">
+                {p.platform && (
+                  <span
+                    className="inline-block text-white text-xs font-semibold px-2 py-1 rounded-full mr-2"
+                    style={{
+                      backgroundColor:
+                        p.platform === 'TikTok' ? '#8b5cf6' :
+                        p.platform === 'Instagram' ? '#ec4899' :
+                        p.platform === 'YouTube' ? '#ef4444' :
+                        p.platform === 'Reddit' ? '#f97316' :
+                        p.platform === 'Pinterest' ? '#f43f5e' :
+                        p.platform === 'Facebook' ? '#1d4ed8' :
+                        p.platform === 'X' ? '#06b6d4' :
+                        '#6b7280'
+                    }}
+                  >
+                    {p.platform}
+                  </span>
+                )}
+                {p.layout_type && (
+                  <span
+                    className="inline-block text-white text-xs font-semibold px-2 py-1 rounded-full mr-2"
+                    style={{
+                      backgroundColor:
+                        p.layout_type === 'carousel' ? '#f97316' :
+                        p.layout_type === 'grid' ? '#0ea5e9' :
+                        p.layout_type === 'timeline' ? '#10b981' :
+                        p.layout_type === 'moodboard' ? '#eab308' :
+                        p.layout_type === 'stacked' ? '#a855f7' :
+                        '#6b7280'
+                    }}
+                  >
+                    {p.layout_type}
+                  </span>
+                )}
+                {p.text}
+              </div>
+              <div className="text-xs text-gray-400 mt-1">
+                {new Date(p.created_at).toLocaleString()}
+              </div>
+            </li>
+          ))}
+      </ul>
     </div>
-  );
+  </div>
+);
+
 }
