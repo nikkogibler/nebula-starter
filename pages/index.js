@@ -14,8 +14,6 @@ export default function Home() {
   const [timeFilter, setTimeFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
 
-    const __forceTailwindTicker = "animate-ticker";
-
   const timeOptions = {
     all: 'All Time',
     '7': 'Past 7 Days',
@@ -193,15 +191,35 @@ export default function Home() {
       WebkitMaskImage: 'none'
     }}
   />
-</div>
 
-    {/* Scrolling Ticker */}
-<div className="overflow-hidden w-full border-y border-yellow-500 mb-6">
-  <div className="animate-ticker text-yellow-400 text-xs font-mono tracking-widest uppercase px-4 py-1">
+<div style={{
+  overflow: 'hidden',
+  width: '100%',
+  borderTop: '1px solid #facc15',
+  borderBottom: '1px solid #facc15',
+  marginBottom: '1.5rem'
+}}>
+  <div style={{
+    display: 'inline-block',
+    whiteSpace: 'nowrap',
+    color: '#facc15',
+    fontFamily: 'monospace',
+    textTransform: 'uppercase',
+    padding: '0.25rem 1rem',
+    animation: 'scrollTicker 30s linear infinite'
+  }}>
     NEBULA EST NOMEN COMMUNE STELLARUM NUBILARIUM — WILLIAM HERSCHEL • THESE FIERY CLOUDS — FATHOMLESS, SILENT — ARE THE VERY ECHO OF TIME ITSELF — EDWIN HUBBLE • 
   </div>
 </div>
-</div>
+<style dangerouslySetInnerHTML={{ __html: `
+  @keyframes scrollTicker {
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+  }
+` }} />
+
+
+        </div>
 
         <form onSubmit={handleSubmit} className="mb-6">
           <input
