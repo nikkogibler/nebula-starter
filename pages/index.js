@@ -195,9 +195,12 @@ export default function Home() {
 <div style={{
   overflow: 'hidden',
   width: '100%',
+  backgroundColor: 'black',
   borderTop: '1px solid #facc15',
   borderBottom: '1px solid #facc15',
-  marginBottom: '1.5rem'
+  marginBottom: '1.5rem',
+  zIndex: 20,
+  position: 'relative'
 }}>
   <div style={{
     display: 'inline-block',
@@ -206,7 +209,9 @@ export default function Home() {
     fontFamily: 'monospace',
     textTransform: 'uppercase',
     padding: '0.25rem 1rem',
-    animation: 'scrollTicker 30s linear infinite'
+    animation: 'scrollTicker 30s linear infinite',
+    zIndex: 30,
+    position: 'relative'
   }}>
     NEBULA EST NOMEN COMMUNE STELLARUM NUBILARIUM — WILLIAM HERSCHEL • THESE FIERY CLOUDS — FATHOMLESS, SILENT — ARE THE VERY ECHO OF TIME ITSELF — EDWIN HUBBLE • 
   </div>
@@ -217,6 +222,7 @@ export default function Home() {
     100% { transform: translateX(-100%); }
   }
 ` }} />
+
 
 
         </div>
