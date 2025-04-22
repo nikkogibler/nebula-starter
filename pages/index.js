@@ -174,13 +174,18 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="relative min-h-screen bg-black text-white overflow-hidden">
-      <div className="absolute inset-0 bg-nebula opacity-40 z-0 pointer-events-none" />
-      <canvas id="stars" className="absolute inset-0 z-0 pointer-events-none" />
-
-      <div className="relative z-10 px-6 py-12 max-w-3xl mx-auto text-center">
-        <h1 className="text-4xl font-bold mb-4">Nebula 🌌</h1>
-        <p className="text-gray-400 mb-8">Your visual content memory</p>
+    <div className="flex flex-col items-center justify-center mb-10">
+  <img
+    src="/logo-nebula.png"
+    alt="Nebula Logo"
+    className="w-32 sm:w-40 md:w-48 mb-4"
+    style={{ filter: 'drop-shadow(0 0 8px rgba(147, 51, 234, 0.7))' }}
+  />
+  <h1 className="text-5xl font-bold text-white">Nebula</h1>
+  <p className="text-gray-300 text-lg mt-2">
+    Organize life by meaning, not just time.
+  </p>
+</div>
 
         <form onSubmit={handleSubmit} className="mb-6">
           <input
