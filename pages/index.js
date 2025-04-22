@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
+import { detectLayoutType } from '../utils/detectLayoutType'; // 👈 Import the layout detection function
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -69,7 +70,7 @@ export default function Home() {
     let platform = null;
     let content_date = null;
 
-    // Platform detection
+    // 🧠 Platform detection
     if (lowercase.includes('tiktok')) platform = 'TikTok';
     else if (lowercase.includes('instagram') || lowercase.includes('ig')) platform = 'Instagram';
     else if (lowercase.includes('youtube') || lowercase.includes('yt')) platform = 'YouTube';
@@ -83,7 +84,10 @@ export default function Home() {
       lowercase.includes('on x')
     ) platform = 'X';
 
-    // Content date detection
+    // 🧠 Layout type detection
+    const layout_type = detectLayoutType(prompt);
+
+    // 🧠 Content date detection
     const now = new Date();
     const year = now.getFullYear();
 
@@ -110,14 +114,16 @@ export default function Home() {
       }
     }
 
-    console.log('🧠 content_date =', content_date);
+    console.log('🧠 Detected content_date:', content_date);
+    console.log('🧠 Detected layout_type:', layout_type);
 
+    // Save to Supabase
     const { error } = await supabase
       .from('prompts')
-      .insert([{ text: prompt, platform, content_date }]);
+      .insert([{ text: prompt, platform, content_date, layout_type }]);
 
     if (error) {
-      console.error('Supabase insert error:', error);
+      console.error('❌ Supabase insert error:', error);
       setMessage('❌ Something went wrong.');
     } else {
       setMessage('✅ Prompt saved!');
@@ -128,91 +134,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-950 text-white px-6 py-12">
-      <div className="max-w-3xl mx-auto text-center">
-        <h1 className="text-4xl font-bold mb-4">Nebula 🌌</h1>
-        <p className="text-lg text-gray-300 mb-8">
-          Explore your saved universe. Use the prompt bar below to generate your custom layout.
-        </p>
-
-        <form onSubmit={handleSubmit}>
-          <input
-            type="text"
-            name="prompt"
-            id="prompt"
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            placeholder="Try: Show my saved TikToks from March 2024"
-            className="w-full bg-gray-800 text-white rounded-lg p-4 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <button type="submit" style={{ display: 'none' }}></button>
-        </form>
-
-        {message && <p className="text-green-400 mt-4">{message}</p>}
-
-        <div className="mt-10 text-left">
-          <div className="mb-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-            <div className="flex items-center gap-2">
-              <label htmlFor="timeFilter" className="text-sm font-medium">
-                Timeframe:
-              </label>
-              <select
-                id="timeFilter"
-                value={timeFilter}
-                onChange={(e) => setTimeFilter(e.target.value)}
-                className="bg-gray-800 text-white border border-gray-600 rounded-lg px-3 py-1 text-sm"
-              >
-                {Object.entries(timeOptions).map(([key, label]) => (
-                  <option key={key} value={key}>{label}</option>
-                ))}
-              </select>
-            </div>
-
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search prompts..."
-              className="bg-gray-800 text-white border border-gray-600 rounded-lg px-3 py-1 text-sm w-full sm:w-1/2"
-            />
-          </div>
-
-          <ul className="space-y-2">
-            {prompts
-              .filter((p) =>
-                searchTerm === '' ? true : p.text.toLowerCase().includes(searchTerm.toLowerCase())
-              )
-              .map((p) => (
-                <li
-                  key={p.id}
-                  className="bg-gray-800 rounded-lg px-4 py-3 text-white text-sm shadow-sm"
-                >
-                  {p.platform && (
-                    <span
-                      className="inline-block text-white text-xs font-semibold px-2 py-1 rounded-full mr-2"
-                      style={{
-                        backgroundColor:
-                          p.platform === 'TikTok' ? '#8b5cf6' :
-                          p.platform === 'Instagram' ? '#ec4899' :
-                          p.platform === 'YouTube' ? '#ef4444' :
-                          p.platform === 'Reddit' ? '#f97316' :
-                          p.platform === 'Pinterest' ? '#f43f5e' :
-                          p.platform === 'Facebook' ? '#1d4ed8' :
-                          p.platform === 'X' ? '#06b6d4' :
-                          '#6b7280'
-                      }}
-                    >
-                      {p.platform}
-                    </span>
-                  )}
-                  {p.text}
-                  <span className="block text-xs text-gray-500 mt-1">
-                    {new Date(p.created_at).toLocaleString()}
-                  </span>
-                </li>
-              ))}
-          </ul>
-        </div>
-      </div>
+      {/* You can add form, search bar, filters, and prompt list here */}
     </div>
   );
 }
