@@ -5,6 +5,7 @@
 body {
   @apply bg-gray-950 text-white;
 }
+
 @keyframes nebulaShift {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
@@ -15,5 +16,5 @@ body {
   background: linear-gradient(115deg, #7c3aed, #8b5cf6, #ec4899, #06b6d4);
   background-size: 400% 400%;
   animation: nebulaShift 20s ease infinite;
-  filter: blur(80px);
 }
+
