@@ -1,4 +1,4 @@
-
+import SignIn from '../components/SignIn';
 import { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
@@ -43,6 +43,8 @@ export default function Home() {
       toDate = now;
     }
 
+<SignIn />
+    
     let query = supabase.from('prompts').select('*');
 
     if (fromDate && toDate) {
