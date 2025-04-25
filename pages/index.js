@@ -178,7 +178,10 @@ export default function Home() {
       <canvas id="stars" className="absolute inset-0 z-0 pointer-events-none" />
 
       <div className="relative z-10 px-6 py-12 max-w-3xl mx-auto text-center">
-        <img src="/logo-nebula.png" alt="Nebula Logo" className="w-32 sm:w-40 md:w-48 mb-6 mix-blend-screen" />
+        <div className="flex justify-center">
+  <img src="/logo-nebula.png" alt="Nebula Logo" className="w-32 sm:w-40 md:w-48 mb-6 mix-blend-screen" />
+</div>
+
 
         {/* Ticker */}
         <div style={{
