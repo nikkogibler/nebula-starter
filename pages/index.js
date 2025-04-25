@@ -1,4 +1,3 @@
-// FULL Nebula index.js with restored gradient background, white Google button, and complete layout
 import { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
@@ -57,9 +56,7 @@ export default function Home() {
     let query = supabase.from('prompts').select('*');
 
     if (fromDate && toDate) {
-      query = query
-        .gte('content_date', fromDate.toISOString())
-        .lte('content_date', toDate.toISOString());
+      query = query.gte('content_date', fromDate.toISOString()).lte('content_date', toDate.toISOString());
     }
 
     const { data, error } = await query.order('created_at', { ascending: false });
@@ -86,10 +83,7 @@ export default function Home() {
     else if (lowercase.includes('facebook') || lowercase.includes('fb')) platform = 'Facebook';
     else if (lowercase.includes('twitter') || lowercase.includes('x.com') || lowercase.includes('x ')) platform = 'X';
 
-    const months = [
-      'january','february','march','april','may','june',
-      'july','august','september','october','november','december'
-    ];
+    const months = ['january','february','march','april','may','june','july','august','september','october','november','december'];
     for (let i = 0; i < months.length; i++) {
       const regex = new RegExp(`${months[i]}\\s+(\\d{4})`, 'i');
       const match = prompt.match(regex);
@@ -120,76 +114,117 @@ export default function Home() {
     }
   };
 
+  useEffect(() => {
+    let animationId;
+    let canvas, ctx;
+    const stars = [];
+
+    function initStars() {
+      if (!canvas) return;
+      stars.length = 0;
+      for (let i = 0; i < 150; i++) {
+        stars.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          r: Math.random() * 1.5,
+          a: Math.random(),
+          s: Math.random() * 0.5 + 0.2
+        });
+      }
+    }
+
+    function resize() {
+      if (!canvas) return;
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      initStars();
+    }
+
+    function draw() {
+      if (!ctx || !canvas) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      stars.forEach(star => {
+        star.y += star.s;
+        if (star.y > canvas.height) {
+          star.y = 0;
+          star.x = Math.random() * canvas.width;
+        }
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.r, 0, 2 * Math.PI);
+        ctx.fillStyle = `rgba(255,255,255,${star.a})`;
+        ctx.fill();
+      });
+      animationId = requestAnimationFrame(draw);
+    }
+
+    setTimeout(() => {
+      canvas = document.getElementById('stars');
+      if (!canvas) return;
+      ctx = canvas.getContext('2d');
+      resize();
+      window.addEventListener('resize', resize);
+      draw();
+    }, 0);
+
+    return () => {
+      window.removeEventListener('resize', resize);
+      if (animationId) cancelAnimationFrame(animationId);
+    };
+  }, []);
+
   return (
     <div className="relative min-h-screen bg-black text-white overflow-hidden">
-      <style>{`
-        .gsi-material-button {
-          background-color: #fff;
-          border: 1px solid #dadce0;
-          border-radius: 4px;
-          color: #3c4043;
-          font-family: Roboto, arial, sans-serif;
-          font-size: 14px;
-          height: 40px;
-          padding: 0 12px;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          position: absolute;
-          top: 1.5rem;
-          right: 1.5rem;
-          z-index: 50;
-        }
-        .gsi-material-button:hover {
-          box-shadow: 0 1px 2px rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
-        }
-        .gsi-material-button .gsi-material-button-icon {
-          height: 20px;
-          width: 20px;
-          margin-right: 12px;
-        }
-        .gsi-material-button .gsi-material-button-content-wrapper {
-          display: flex;
-          align-items: center;
-        }
-        .gsi-material-button .gsi-material-button-contents {
-          font-weight: 500;
-        }
-      `}</style>
-
       <div className="absolute inset-0 bg-nebula opacity-40 z-0 pointer-events-none" />
       <canvas id="stars" className="absolute inset-0 z-0 pointer-events-none" />
 
-      {!user ? (
-        <button onClick={handleGoogleLogin} className="gsi-material-button">
-          <div className="gsi-material-button-content-wrapper">
-            <div className="gsi-material-button-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
-                <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85..." />
-                <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55..." />
-                <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59..." />
-                <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6..." />
-              </svg>
-            </div>
-            <span className="gsi-material-button-contents">Sign in with Google</span>
-          </div>
-        </button>
-      ) : (
-        <div className="absolute top-6 right-6 text-sm">
-          <p className="text-gray-400 mb-2">Signed in as {user.email}</p>
-          <button onClick={handleLogout} className="bg-gray-700 text-white px-4 py-2 rounded-md">Sign out</button>
-        </div>
-      )}
-
       <div className="relative z-10 px-6 py-12 max-w-3xl mx-auto text-center">
-        <div className="flex justify-center">
-          <img
-            src="/logo-nebula.png"
-            alt="Nebula Logo"
-            className="w-32 sm:w-40 md:w-48 mb-4 mix-blend-screen"
-            style={{ filter: 'drop-shadow(0 0 12px rgba(255,255,255,0.5))' }}
-          />
+        <img src="/logo-nebula.png" alt="Nebula Logo" className="w-32 sm:w-40 md:w-48 mb-6 mix-blend-screen" />
+
+        {/* Ticker */}
+        <div style={{
+          overflow: 'hidden',
+          width: '100%',
+          backgroundColor: 'black',
+          borderTop: '1px solid #facc15',
+          borderBottom: '1px solid #facc15',
+          padding: '0.5rem 0',
+          marginBottom: '1.5rem',
+          zIndex: 20,
+          position: 'relative'
+        }}>
+          <div style={{
+            display: 'inline-block',
+            whiteSpace: 'nowrap',
+            color: '#facc15',
+            fontFamily: 'monospace',
+            textTransform: 'uppercase',
+            padding: '0.25rem 3rem',
+            animation: 'scrollTicker 40s linear infinite',
+            zIndex: 30,
+            position: 'relative'
+          }}>
+            TEMPUS RERUM IMPERATOR EST — SENECA • WE ARE A WAY FOR THE COSMOS TO KNOW ITSELF — SAGAN • THE UNIVERSE IS UNDER NO OBLIGATION TO MAKE SENSE TO YOU — TYSON • THE NIGHT SKY IS A MAP OF POSSIBILITY — UNKNOWN • STARS CANNOT SHINE WITHOUT DARKNESS — DHARMA TEACHING • REALITY IS MERELY AN ILLUSION, ALBEIT A VERY PERSISTENT ONE — EINSTEIN • LOOK UP AT THE STARS AND NOT DOWN AT YOUR FEET — HAWKING • WE ARE STARDUST BROUGHT TO LIFE — BRIAN COX • ALL THAT IS GOLD DOES NOT GLITTER, NOT ALL THOSE WHO WANDER ARE LOST — TOLKIEN  • THE SKY CALLS TO US. IF WE DO NOT DESTROY OURSELVES, WE WILL ONE DAY VENTURE TO THE STARS — SAGAN •
+          </div>
         </div>
+        <style dangerouslySetInnerHTML={{ __html: `
+          @keyframes scrollTicker {
+            0%   { transform: translateX(0%); }
+            100% { transform: translateX(-100%); }
+          }
+        ` }} />
+
+        {!user ? (
+          <button onClick={handleGoogleLogin} className="bg-white text-black px-6 py-3 rounded-md mb-6">
+            Sign in with Google
+          </button>
+        ) : (
+          <>
+            <p className="text-sm text-gray-400 mb-2">Signed in as {user.email}</p>
+            <button onClick={handleLogout} className="bg-gray-700 text-white px-4 py-2 rounded-md mb-6">
+              Sign out
+            </button>
+          </>
+        )}
 
         <form onSubmit={handleSubmit} className="mb-6">
           <input
@@ -210,7 +245,6 @@ export default function Home() {
               <option key={key} value={key}>{label}</option>
             ))}
           </select>
-
           <input
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -228,14 +262,40 @@ export default function Home() {
               <li key={p.id} className="bg-gray-800 p-4 rounded">
                 <div className="text-sm mb-1">
                   {p.platform && (
-                    <span className="inline-block text-white text-xs font-semibold px-2 py-1 rounded-full mr-2" style={{ backgroundColor: p.platform === 'TikTok' ? '#8b5cf6' : p.platform === 'Instagram' ? '#ec4899' : p.platform === 'YouTube' ? '#ef4444' : p.platform === 'Reddit' ? '#f97316' : p.platform === 'Pinterest' ? '#f43f5e' : p.platform === 'Facebook' ? '#1d4ed8' : p.platform === 'X' ? '#06b6d4' : '#6b7280' }}>{p.platform}</span>
+                    <span className="inline-block text-white text-xs font-semibold px-2 py-1 rounded-full mr-2"
+                      style={{
+                        backgroundColor:
+                          p.platform === 'TikTok' ? '#8b5cf6' :
+                          p.platform === 'Instagram' ? '#ec4899' :
+                          p.platform === 'YouTube' ? '#ef4444' :
+                          p.platform === 'Reddit' ? '#f97316' :
+                          p.platform === 'Pinterest' ? '#f43f5e' :
+                          p.platform === 'Facebook' ? '#1d4ed8' :
+                          p.platform === 'X' ? '#06b6d4' :
+                          '#6b7280'
+                      }}>
+                      {p.platform}
+                    </span>
                   )}
                   {p.layout_type && (
-                    <span className="inline-block text-white text-xs font-semibold px-2 py-1 rounded-full mr-2" style={{ backgroundColor: p.layout_type === 'carousel' ? '#f97316' : p.layout_type === 'grid' ? '#0ea5e9' : p.layout_type === 'timeline' ? '#10b981' : p.layout_type === 'moodboard' ? '#eab308' : p.layout_type === 'stacked' ? '#a855f7' : '#6b7280' }}>{p.layout_type}</span>
+                    <span className="inline-block text-white text-xs font-semibold px-2 py-1 rounded-full mr-2"
+                      style={{
+                        backgroundColor:
+                          p.layout_type === 'carousel' ? '#f97316' :
+                          p.layout_type === 'grid' ? '#0ea5e9' :
+                          p.layout_type === 'timeline' ? '#10b981' :
+                          p.layout_type === 'moodboard' ? '#eab308' :
+                          p.layout_type === 'stacked' ? '#a855f7' :
+                          '#6b7280'
+                      }}>
+                      {p.layout_type}
+                    </span>
                   )}
                   {p.text}
                 </div>
-                <div className="text-xs text-gray-400 mt-1">{new Date(p.created_at).toLocaleString()}</div>
+                <div className="text-xs text-gray-400 mt-1">
+                  {new Date(p.created_at).toLocaleString()}
+                </div>
               </li>
             ))}
         </ul>
