@@ -1,6 +1,4 @@
-// Final version of index.js with top-right Google Sign-In button, centered logo, and full Nebula logic
-// Includes starry background, Supabase prompt saving, styled Google login button, and user sign-out
-
+// FULL Nebula index.js — with white Google button (top-right), prompt alignment, star background, full layout
 import { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
@@ -57,13 +55,20 @@ export default function Home() {
     }
 
     let query = supabase.from('prompts').select('*');
+
     if (fromDate && toDate) {
-      query = query.gte('content_date', fromDate.toISOString()).lte('content_date', toDate.toISOString());
+      query = query
+        .gte('content_date', fromDate.toISOString())
+        .lte('content_date', toDate.toISOString());
     }
 
     const { data, error } = await query.order('created_at', { ascending: false });
-    if (error) console.error('Error fetching prompts:', error.message);
-    else setPrompts(data);
+
+    if (error) {
+      console.error('Error fetching prompts:', error.message);
+    } else {
+      setPrompts(data);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -81,7 +86,10 @@ export default function Home() {
     else if (lowercase.includes('facebook') || lowercase.includes('fb')) platform = 'Facebook';
     else if (lowercase.includes('twitter') || lowercase.includes('x.com') || lowercase.includes('x ')) platform = 'X';
 
-    const months = ['january','february','march','april','may','june','july','august','september','october','november','december'];
+    const months = [
+      'january','february','march','april','may','june',
+      'july','august','september','october','november','december'
+    ];
     for (let i = 0; i < months.length; i++) {
       const regex = new RegExp(`${months[i]}\\s+(\\d{4})`, 'i');
       const match = prompt.match(regex);
@@ -98,9 +106,9 @@ export default function Home() {
     else if (lowercase.includes('moodboard')) layout_type = 'moodboard';
     else if (lowercase.includes('stacked')) layout_type = 'stacked';
 
-    const { error } = await supabase.from('prompts').insert([
-      { text: prompt, platform, content_date, layout_type, user_id: user?.id || null }
-    ]);
+    const { error } = await supabase
+      .from('prompts')
+      .insert([{ text: prompt, platform, content_date, layout_type, user_id: user?.id || null }]);
 
     if (error) {
       setMessage('❌ Error saving prompt');
@@ -174,14 +182,10 @@ export default function Home() {
     <div className="relative min-h-screen bg-black text-white overflow-hidden">
       <style>{`
         .gsi-material-button {
-          position: absolute;
-          top: 1.5rem;
-          right: 1.5rem;
-          z-index: 50;
-          background-color: #131314;
-          border: 1px solid #8e918f;
-          color: #e3e3e3;
-          border-radius: 20px;
+          background-color: #fff;
+          border: 1px solid #dadce0;
+          border-radius: 4px;
+          color: #3c4043;
           font-family: Roboto, arial, sans-serif;
           font-size: 14px;
           height: 40px;
@@ -189,7 +193,13 @@ export default function Home() {
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          cursor: pointer;
+          position: absolute;
+          top: 1.5rem;
+          right: 1.5rem;
+          z-index: 50;
+        }
+        .gsi-material-button:hover {
+          box-shadow: 0 1px 2px rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
         }
         .gsi-material-button .gsi-material-button-icon {
           height: 20px;
@@ -199,26 +209,23 @@ export default function Home() {
         .gsi-material-button .gsi-material-button-content-wrapper {
           display: flex;
           align-items: center;
-          width: 100%;
         }
         .gsi-material-button .gsi-material-button-contents {
           font-weight: 500;
         }
       `}</style>
 
-      <div className="absolute inset-0 bg-nebula opacity-40 z-0 pointer-events-none" />
       <canvas id="stars" className="absolute inset-0 z-0 pointer-events-none" />
 
       {!user ? (
         <button onClick={handleGoogleLogin} className="gsi-material-button">
           <div className="gsi-material-button-content-wrapper">
             <div className="gsi-material-button-icon">
-              <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" style={{ display: 'block' }}>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
                 <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85..." />
                 <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55..." />
                 <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59..." />
                 <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6..." />
-                <path fill="none" d="M0 0h48v48H0z" />
               </svg>
             </div>
             <span className="gsi-material-button-contents">Sign in with Google</span>
@@ -233,8 +240,14 @@ export default function Home() {
 
       <div className="relative z-10 px-6 py-12 max-w-3xl mx-auto text-center">
         <div className="flex justify-center">
-          <img src="/logo-nebula.png" alt="Nebula Logo" className="w-32 sm:w-40 md:w-48 mb-4 mix-blend-screen" style={{ filter: 'drop-shadow(0 0 12px rgba(255,255,255,0.5))' }} />
+          <img
+            src="/logo-nebula.png"
+            alt="Nebula Logo"
+            className="w-32 sm:w-40 md:w-48 mb-4 mix-blend-screen"
+            style={{ filter: 'drop-shadow(0 0 12px rgba(255,255,255,0.5))' }}
+          />
         </div>
+
         <form onSubmit={handleSubmit} className="mb-6">
           <input
             value={prompt}
@@ -243,10 +256,18 @@ export default function Home() {
             className="w-full p-4 rounded bg-gray-800 text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500"
           />
         </form>
+
         <div className="flex flex-col sm:flex-row justify-between items-center mb-4 gap-2">
-          <select value={timeFilter} onChange={(e) => setTimeFilter(e.target.value)} className="bg-gray-800 text-white border border-gray-600 rounded px-3 py-2 text-sm">
-            {Object.entries(timeOptions).map(([key, label]) => (<option key={key} value={key}>{label}</option>))}
+          <select
+            value={timeFilter}
+            onChange={(e) => setTimeFilter(e.target.value)}
+            className="bg-gray-800 text-white border border-gray-600 rounded px-3 py-2 text-sm"
+          >
+            {Object.entries(timeOptions).map(([key, label]) => (
+              <option key={key} value={key}>{label}</option>
+            ))}
           </select>
+
           <input
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -254,18 +275,26 @@ export default function Home() {
             className="bg-gray-800 text-white border border-gray-600 rounded px-3 py-2 text-sm w-full sm:w-1/2"
           />
         </div>
+
         {message && <p className="text-green-400 mb-4">{message}</p>}
+
         <ul className="space-y-4 text-left">
-          {prompts.filter(p => searchTerm === '' || p.text.toLowerCase().includes(searchTerm.toLowerCase())).map((p) => (
-            <li key={p.id} className="bg-gray-800 p-4 rounded">
-              <div className="text-sm mb-1">
-                {p.platform && <span className="inline-block text-white text-xs font-semibold px-2 py-1 rounded-full mr-2" style={{ backgroundColor: p.platform === 'TikTok' ? '#8b5cf6' : p.platform === 'Instagram' ? '#ec4899' : p.platform === 'YouTube' ? '#ef4444' : p.platform === 'Reddit' ? '#f97316' : p.platform === 'Pinterest' ? '#f43f5e' : p.platform === 'Facebook' ? '#1d4ed8' : p.platform === 'X' ? '#06b6d4' : '#6b7280' }}>{p.platform}</span>}
-                {p.layout_type && <span className="inline-block text-white text-xs font-semibold px-2 py-1 rounded-full mr-2" style={{ backgroundColor: p.layout_type === 'carousel' ? '#f97316' : p.layout_type === 'grid' ? '#0ea5e9' : p.layout_type === 'timeline' ? '#10b981' : p.layout_type === 'moodboard' ? '#eab308' : p.layout_type === 'stacked' ? '#a855f7' : '#6b7280' }}>{p.layout_type}</span>}
-                {p.text}
-              </div>
-              <div className="text-xs text-gray-400 mt-1">{new Date(p.created_at).toLocaleString()}</div>
-            </li>
-          ))}
+          {prompts
+            .filter(p => searchTerm === '' || p.text.toLowerCase().includes(searchTerm.toLowerCase()))
+            .map((p) => (
+              <li key={p.id} className="bg-gray-800 p-4 rounded">
+                <div className="text-sm mb-1">
+                  {p.platform && (
+                    <span className="inline-block text-white text-xs font-semibold px-2 py-1 rounded-full mr-2" style={{ backgroundColor: p.platform === 'TikTok' ? '#8b5cf6' : p.platform === 'Instagram' ? '#ec4899' : p.platform === 'YouTube' ? '#ef4444' : p.platform === 'Reddit' ? '#f97316' : p.platform === 'Pinterest' ? '#f43f5e' : p.platform === 'Facebook' ? '#1d4ed8' : p.platform === 'X' ? '#06b6d4' : '#6b7280' }}>{p.platform}</span>
+                  )}
+                  {p.layout_type && (
+                    <span className="inline-block text-white text-xs font-semibold px-2 py-1 rounded-full mr-2" style={{ backgroundColor: p.layout_type === 'carousel' ? '#f97316' : p.layout_type === 'grid' ? '#0ea5e9' : p.layout_type === 'timeline' ? '#10b981' : p.layout_type === 'moodboard' ? '#eab308' : p.layout_type === 'stacked' ? '#a855f7' : '#6b7280' }}>{p.layout_type}</span>
+                  )}
+                  {p.text}
+                </div>
+                <div className="text-xs text-gray-400 mt-1">{new Date(p.created_at).toLocaleString()}</div>
+              </li>
+            ))}
         </ul>
       </div>
     </div>
