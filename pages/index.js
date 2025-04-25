@@ -1,4 +1,3 @@
-import SignIn from '../components/SignIn';
 import { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
@@ -13,6 +12,7 @@ export default function Home() {
   const [prompts, setPrompts] = useState([]);
   const [timeFilter, setTimeFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const [user, setUser] = useState(null);
 
   const timeOptions = {
     all: 'All Time',
@@ -24,7 +24,17 @@ export default function Home() {
 
   useEffect(() => {
     fetchPrompts();
+    supabase.auth.getUser().then(({ data: { user } }) => setUser(user));
   }, [timeFilter]);
+
+  const handleGoogleLogin = async () => {
+    await supabase.auth.signInWithOAuth({ provider: 'google' });
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setUser(null);
+  };
 
   const fetchPrompts = async () => {
     const now = new Date();
@@ -43,14 +53,10 @@ export default function Home() {
       toDate = now;
     }
 
-<SignIn />
-    
     let query = supabase.from('prompts').select('*');
 
     if (fromDate && toDate) {
-      query = query
-        .gte('content_date', fromDate.toISOString())
-        .lte('content_date', toDate.toISOString());
+      query = query.gte('content_date', fromDate.toISOString()).lte('content_date', toDate.toISOString());
     }
 
     const { data, error } = await query.order('created_at', { ascending: false });
@@ -77,23 +83,14 @@ export default function Home() {
     else if (lowercase.includes('facebook') || lowercase.includes('fb')) platform = 'Facebook';
     else if (lowercase.includes('twitter') || lowercase.includes('x.com') || lowercase.includes('x ')) platform = 'X';
 
-    if (lowercase.includes('last year')) {
-      content_date = new Date(new Date().getFullYear() - 1, 0, 1);
-    } else if (lowercase.includes('this year')) {
-      content_date = new Date(new Date().getFullYear(), 0, 1);
-    } else {
-      const months = [
-        'january', 'february', 'march', 'april', 'may', 'june',
-        'july', 'august', 'september', 'october', 'november', 'december'
-      ];
-      for (let i = 0; i < months.length; i++) {
-        const regex = new RegExp(`${months[i]}\s+(\d{4})`, 'i');
-        const match = prompt.match(regex);
-        if (match) {
-          const matchedYear = parseInt(match[1]);
-          content_date = new Date(matchedYear, i, 1);
-          break;
-        }
+    const months = ['january','february','march','april','may','june','july','august','september','october','november','december'];
+    for (let i = 0; i < months.length; i++) {
+      const regex = new RegExp(`${months[i]}\\s+(\\d{4})`, 'i');
+      const match = prompt.match(regex);
+      if (match) {
+        const matchedYear = parseInt(match[1]);
+        content_date = new Date(matchedYear, i, 1);
+        break;
       }
     }
 
@@ -105,7 +102,7 @@ export default function Home() {
 
     const { error } = await supabase
       .from('prompts')
-      .insert([{ text: prompt, platform, content_date, layout_type }]);
+      .insert([{ text: prompt, platform, content_date, layout_type, user_id: user?.id || null }]);
 
     if (error) {
       setMessage('❌ Error saving prompt');
@@ -181,57 +178,53 @@ export default function Home() {
       <canvas id="stars" className="absolute inset-0 z-0 pointer-events-none" />
 
       <div className="relative z-10 px-6 py-12 max-w-3xl mx-auto text-center">
-        <div className="flex flex-col items-center justify-center mb-10">
-  <img
-    src="/logo-nebula.png"
-    alt="Nebula Logo"
-    className="w-32 sm:w-40 md:w-48 mb-4 mix-blend-screen"
-    style={{
-      filter: 'drop-shadow(0 0 12px rgba(255,255,255,0.5))',
-      imageRendering: 'auto',
-      backgroundColor: 'transparent',
-      WebkitMaskImage: 'none'
-    }}
-  />
+        <img src="/logo-nebula.png" alt="Nebula Logo" className="w-32 sm:w-40 md:w-48 mb-6 mix-blend-screen" />
 
-<div style={{
-  overflow: 'hidden',
-  width: '100%',
-  backgroundColor: 'black',
-  borderTop: '1px solid #facc15',
-  borderBottom: '1px solid #facc15',
-  padding: '0.5rem 0',
-  marginBottom: '1.5rem',
-  zIndex: 20,
-  position: 'relative'
-}}>
-  <div style={{
-    display: 'inline-block',
-    whiteSpace: 'nowrap',
-    color: '#facc15',
-    fontFamily: 'monospace',
-    textTransform: 'uppercase',
-    padding: '0.25rem 3rem',
-    animation: 'scrollTicker 40s linear infinite',
-    zIndex: 30,
-    position: 'relative'
-  }}>
-    TEMPUS RERUM IMPERATOR EST — SENECA • WE ARE A WAY FOR THE COSMOS TO KNOW ITSELF — SAGAN • THE UNIVERSE IS UNDER NO OBLIGATION TO MAKE SENSE TO YOU — TYSON • THE NIGHT SKY IS A MAP OF POSSIBILITY — UNKNOWN • STARS CANNOT SHINE WITHOUT DARKNESS — DHARMA TEACHING • REALITY IS MERELY AN ILLUSION, ALBEIT A VERY PERSISTENT ONE — EINSTEIN • LOOK UP AT THE STARS AND NOT DOWN AT YOUR FEET — HAWKING • WE ARE STARDUST BROUGHT TO LIFE — BRIAN COX • ALL THAT IS GOLD DOES NOT GLITTER, NOT ALL THOSE WHO WANDER ARE LOST — TOLKIEN  • THE SKY CALLS TO US. IF WE DO NOT DESTROY OURSELVES, WE WILL ONE DAY VENTURE TO THE STARS — SAGAN •
-
-    &nbsp;&nbsp;&nbsp;
-    TEMPUS RERUM IMPERATOR EST — SENECA • WE ARE A WAY FOR THE COSMOS TO KNOW ITSELF — SAGAN • THE UNIVERSE IS UNDER NO OBLIGATION TO MAKE SENSE TO YOU — TYSON • THE NIGHT SKY IS A MAP OF POSSIBILITY — UNKNOWN • STARS CANNOT SHINE WITHOUT DARKNESS — DHARMA TEACHING • REALITY IS MERELY AN ILLUSION, ALBEIT A VERY PERSISTENT ONE — EINSTEIN • LOOK UP AT THE STARS AND NOT DOWN AT YOUR FEET — HAWKING • WE ARE STARDUST BROUGHT TO LIFE — BRIAN COX • ALL THAT IS GOLD DOES NOT GLITTER, NOT ALL THOSE WHO WANDER ARE LOST — TOLKIEN  • THE SKY CALLS TO US. IF WE DO NOT DESTROY OURSELVES, WE WILL ONE DAY VENTURE TO THE STARS — SAGAN • 
-
-  </div>
-</div>
-<style dangerouslySetInnerHTML={{ __html: `
-  @keyframes scrollTicker {
-    0%   { transform: translateX(0%); }
-    100% { transform: translateX(-100%); }
-  }
-` }} />
-
-
+        {/* Ticker */}
+        <div style={{
+          overflow: 'hidden',
+          width: '100%',
+          backgroundColor: 'black',
+          borderTop: '1px solid #facc15',
+          borderBottom: '1px solid #facc15',
+          padding: '0.5rem 0',
+          marginBottom: '1.5rem',
+          zIndex: 20,
+          position: 'relative'
+        }}>
+          <div style={{
+            display: 'inline-block',
+            whiteSpace: 'nowrap',
+            color: '#facc15',
+            fontFamily: 'monospace',
+            textTransform: 'uppercase',
+            padding: '0.25rem 3rem',
+            animation: 'scrollTicker 40s linear infinite',
+            zIndex: 30,
+            position: 'relative'
+          }}>
+            TEMPUS RERUM IMPERATOR EST — SENECA • WE ARE A WAY FOR THE COSMOS TO KNOW ITSELF — SAGAN • THE UNIVERSE IS UNDER NO OBLIGATION TO MAKE SENSE TO YOU — TYSON • THE NIGHT SKY IS A MAP OF POSSIBILITY — UNKNOWN • STARS CANNOT SHINE WITHOUT DARKNESS — DHARMA TEACHING • REALITY IS MERELY AN ILLUSION, ALBEIT A VERY PERSISTENT ONE — EINSTEIN • LOOK UP AT THE STARS AND NOT DOWN AT YOUR FEET — HAWKING • WE ARE STARDUST BROUGHT TO LIFE — BRIAN COX • ALL THAT IS GOLD DOES NOT GLITTER, NOT ALL THOSE WHO WANDER ARE LOST — TOLKIEN  • THE SKY CALLS TO US. IF WE DO NOT DESTROY OURSELVES, WE WILL ONE DAY VENTURE TO THE STARS — SAGAN •
+          </div>
         </div>
+        <style dangerouslySetInnerHTML={{ __html: `
+          @keyframes scrollTicker {
+            0%   { transform: translateX(0%); }
+            100% { transform: translateX(-100%); }
+          }
+        ` }} />
+
+        {!user ? (
+          <button onClick={handleGoogleLogin} className="bg-white text-black px-6 py-3 rounded-md mb-6">
+            Sign in with Google
+          </button>
+        ) : (
+          <>
+            <p className="text-sm text-gray-400 mb-2">Signed in as {user.email}</p>
+            <button onClick={handleLogout} className="bg-gray-700 text-white px-4 py-2 rounded-md mb-6">
+              Sign out
+            </button>
+          </>
+        )}
 
         <form onSubmit={handleSubmit} className="mb-6">
           <input
@@ -269,8 +262,7 @@ export default function Home() {
               <li key={p.id} className="bg-gray-800 p-4 rounded">
                 <div className="text-sm mb-1">
                   {p.platform && (
-                    <span
-                      className="inline-block text-white text-xs font-semibold px-2 py-1 rounded-full mr-2"
+                    <span className="inline-block text-white text-xs font-semibold px-2 py-1 rounded-full mr-2"
                       style={{
                         backgroundColor:
                           p.platform === 'TikTok' ? '#8b5cf6' :
@@ -281,14 +273,12 @@ export default function Home() {
                           p.platform === 'Facebook' ? '#1d4ed8' :
                           p.platform === 'X' ? '#06b6d4' :
                           '#6b7280'
-                      }}
-                    >
+                      }}>
                       {p.platform}
                     </span>
                   )}
                   {p.layout_type && (
-                    <span
-                      className="inline-block text-white text-xs font-semibold px-2 py-1 rounded-full mr-2"
+                    <span className="inline-block text-white text-xs font-semibold px-2 py-1 rounded-full mr-2"
                       style={{
                         backgroundColor:
                           p.layout_type === 'carousel' ? '#f97316' :
@@ -297,8 +287,7 @@ export default function Home() {
                           p.layout_type === 'moodboard' ? '#eab308' :
                           p.layout_type === 'stacked' ? '#a855f7' :
                           '#6b7280'
-                      }}
-                    >
+                      }}>
                       {p.layout_type}
                     </span>
                   )}
